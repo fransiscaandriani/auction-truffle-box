@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import BlindAuctionContract from "./contracts/BlindAuction.json";
 import getWeb3 from "./utils/getWeb3";
-
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import AuctionList from "./components/AuctionList";
+import Auction from "./components/Auction";
+import TopAppBar from "./components/TopAppBar";
 import "./App.css";
 
 class App extends Component {
@@ -66,17 +69,30 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 40</strong> of App.js.
-        </p>
-        <div>The stored value is: {this.state.storageValue}</div>
+        <Router>
+          <div>
+            {/* <nav>
+          <ul>
+            <li>
+              <Link to="/auctions">Auctions</Link>
+            </li>
+          </ul>
+        </nav> */}
+
+            {/* A <Switch> looks through its children <Route>s and
+            renders the first one that matches the current URL. */}
+            <Switch>
+              <Route path="/auctions">
+                <TopAppBar />
+                <AuctionList />
+              </Route>
+              <Route path="/auction">
+                <TopAppBar />
+                <Auction />
+              </Route>
+            </Switch>
+          </div>
+        </Router>
       </div>
     );
   }

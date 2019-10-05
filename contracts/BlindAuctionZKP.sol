@@ -26,8 +26,6 @@ contract Auction {
     uint mask =1;
 
     //Auction Parameters
-    string public name;
-    string public desc;
     address payable public auctioneerAddress;
     uint    public bidEndTime;
     uint    public revealTime;
@@ -40,13 +38,12 @@ contract Auction {
     uint public highestBid;
 
     //Constructor = Setting all Parameters and auctioneerAddress as well
-    constructor(string memory _name, string memory _desc, uint _bidEndTime, uint _revealTime, uint _winnerPaymentTime, uint _maxBiddersCount,
-     uint _fairnessFees, string memory _auctioneerRSAPublicKey, address pedersenAddress, uint8 k, bool _testing)
-     public payable {
-        require(msg.value >= _fairnessFees);
-        name = _name;
-        desc = _desc;
-        auctioneerAddress = msg.sender;
+    constructor(uint _bidEndTime, uint _revealTime, uint _winnerPaymentTime, uint _maxBiddersCount,
+     uint _fairnessFees, string memory _auctioneerRSAPublicKey, address pedersenAddress, uint8 k, bool _testing,
+     address payable _auctioneerAddress, uint _auctioneerDeposit )
+     public {
+        require(_auctioneerDeposit >= _fairnessFees, "Deposit too low");
+        auctioneerAddress = _auctioneerAddress;
         bidEndTime = _bidEndTime;
         revealTime = _revealTime;
         winnerPaymentTime = _winnerPaymentTime;

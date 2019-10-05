@@ -1,4 +1,4 @@
-pragma solidity >0.4.23 <0.7.0;
+pragma solidity >0.4.10 <0.7.0;
 
 contract BlindAuction {
     struct Bid {

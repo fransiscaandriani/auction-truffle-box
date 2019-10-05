@@ -1,0 +1,8 @@
+{
+  "name": "auction-box",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "openzeppelin-solidity": "^2.3.0"
+  }
+}

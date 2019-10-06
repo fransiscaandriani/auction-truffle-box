@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import AuctionFactory from "./contracts/AuctionFactory.json";
 import Auction from "./contracts/Auction.json";
 import Pedersen from "./contracts/Pedersen.json";
 import getWeb3 from "./utils/getWeb3";
@@ -8,11 +7,12 @@ import {
   getPedersenContract,
   getAuctionContract
 } from "./utils/getContracts";
+import getCurrentAccount from "./utils/getCurrentAccount";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import AuctionList from "./components/AuctionList";
 import AuctionPage from "./components/AuctionPage";
 import TopAppBar from "./components/TopAppBar";
-import { mockAuction, createAuction } from "./service/auctionService";
+import { mockAuction, createAuction, placeBid } from "./service/auctionService";
 import "./App.css";
 
 class App extends Component {
@@ -24,12 +24,12 @@ class App extends Component {
       const web3 = await getWeb3();
 
       // Get the AuctionFactory contract instance.
-      const instance = getAuctionFactoryContract(web3);
+      const instance = await getAuctionFactoryContract(web3);
 
       // Use web3 to get the user's account
-      var accounts = await web3.eth.getAccounts();
+      var account = await getCurrentAccount(web3);
 
-      this.setState({ web3, account: accounts[0], contract: instance });
+      this.setState({ web3, account, contract: instance });
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
@@ -46,28 +46,28 @@ class App extends Component {
   runExample = async () => {
     const { account, web3, contract } = this.state;
 
-    const pedersen = new web3.eth.Contract(
-      Pedersen.abi,
-      "0xc199662A3BB514a79889D161280290020FD41B36"
-    );
-    const commit = await pedersen.methods
-      .Commit(10000000000000, 22030291809)
-      .call();
-    console.log(commit);
+    // const pedersen = new web3.eth.Contract(
+    //   Pedersen.abi,
+    //   "0xc199662A3BB514a79889D161280290020FD41B36"
+    // );
+    // const commit = await pedersen.methods
+    //   .Commit(10000000000000, 22030291809)
+    //   .call();
+    // console.log(commit);
 
     // Stores a given value, 5 by default.
     // const _blindedBid = web3.utils.soliditySha3(10, false, "abcd");
     // createAuction(accounts[0], web3, contract);
-    const auction = new web3.eth.Contract(
-      Auction.abi,
-      "0x9745Fdc0F354FE7B13996039600239A5Bb0754cb"
+    const auction = await getAuctionContract(
+      web3,
+      "0x38a3140D0643Fd3a02768d169086DE7A71de56b0"
     );
     console.log(auction.methods.auctioneerAddress().call());
 
     // await auction.methods
     //   .Bid(commit.cX, commit.cY)
     //   .send({ from: accounts[0], value: 5000000000 });
-
+    // await placeBid(account, web3, auction, web3.utils.toWei("5"));
     console.log(auction.methods.bidders(account).call());
 
     // const auctionContract = auction[2];

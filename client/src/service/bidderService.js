@@ -1,5 +1,6 @@
 import { getPedersenContract } from "../utils/getContracts";
 import JSEncrypt from "jsencrypt";
+import Cryptico from "cryptico-js";
 
 // Input bid in eth
 export async function placeBid(account, web3, auctionContract, bid) {
@@ -10,17 +11,22 @@ export async function placeBid(account, web3, auctionContract, bid) {
   const pedersen = await getPedersenContract(web3);
   const randomInt = Math.floor((Math.random * 10) ^ 8);
   const commit = await pedersen.methods.Commit(bid, randomInt).call();
-  auctionContract.methods
-    .Bid(commit.cX, commit.cY)
-    .send({ from: account, value: fee });
-
-  var crypt = new JSEncrypt();
-  crypt.setKey(auctioneerRSAPublicKey);
-  return encrypt(bid, randomInt, crypt);
+  try {
+    await auctionContract.methods
+      .Bid(commit.cX, commit.cY)
+      .send({ from: account, value: fee });
+    return encrypt(bid, randomInt, auctioneerRSAPublicKey);
+  } catch (e) {
+    alert(`Transaction unsuccessful`);
+    return null;
+  }
+  // var crypt = new JSEncrypt();
+  // crypt.setKey(auctioneerRSAPublicKey);
 }
 
-async function encrypt(bid, randomInt, crypt) {
+async function encrypt(bid, randomInt, publicKey) {
   const object = { bid: bid, random: randomInt };
   const objectStr = JSON.stringify(object);
-  return crypt.encrypt(objectStr);
+  const encryptionResult = Cryptico.encrypt(objectStr, publicKey);
+  return encryptionResult.cipher;
 }

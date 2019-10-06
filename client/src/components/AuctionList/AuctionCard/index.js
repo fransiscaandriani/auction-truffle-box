@@ -40,7 +40,7 @@ function AuctionCard(props) {
     <Card className={classes.card}>
       <CardContent>
         <Typography variant="h5" component="h2">
-          {props.title}
+          {props.name}
         </Typography>
         <Typography variant="body2" component="p" color="textSecondary">
           {props.desc}

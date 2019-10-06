@@ -6,7 +6,7 @@ export async function getAuctionFactoryContract(web3) {
   try {
     const networkId = await web3.eth.net.getId();
     const deployedNetwork = AuctionFactory.networks[networkId];
-    const instance = new web3.eth.Contract(
+    const instance = await new web3.eth.Contract(
       AuctionFactory.abi,
       deployedNetwork && deployedNetwork.address
     );
@@ -19,7 +19,7 @@ export async function getAuctionFactoryContract(web3) {
 
 export async function getAuctionContract(web3, address) {
   try {
-    const instance = new web3.eth.Contract(Auction.abi, address);
+    const instance = await new web3.eth.Contract(Auction.abi, address);
     return instance;
   } catch (error) {
     alert(`Failed to load Auction contract.`);
@@ -30,8 +30,8 @@ export async function getAuctionContract(web3, address) {
 export async function getPedersenContract(web3) {
   try {
     const auctionFactory = await getAuctionFactoryContract(web3);
-    const pedersenAddress = auctionFactory.methods.pedersenAddress().call();
-    const instance = new web3.eth.Contract(Pedersen.abi, pedersenAddress);
+    const pedersenAddress = await auctionFactory.methods.pedersen().call();
+    const instance = await new web3.eth.Contract(Pedersen.abi, pedersenAddress);
     return instance;
   } catch (error) {
     alert(`Failed to load Pedersen contract.`);

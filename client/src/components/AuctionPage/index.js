@@ -32,7 +32,7 @@ const useStyles = makeStyles({
   }
 });
 
-function Auction() {
+function AuctionPage() {
   const classes = useStyles();
 
   return (
@@ -75,4 +75,4 @@ function Auction() {
   );
 }
 
-export default Auction;
+export default AuctionPage;

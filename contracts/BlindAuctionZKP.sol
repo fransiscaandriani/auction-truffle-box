@@ -99,7 +99,7 @@ contract Auction {
         states = VerificationStates.Verify;
     }
 
-    function ZKPVerify(uint[] memory response, uint[] memory deltaResponses) public challengeByAuctioneer {
+    function ZKPVerify(uint[] memory response, uint[] memory deltaResponses) public {
         require(states == VerificationStates.Verify || states == VerificationStates.VerifyDelta);
         uint8 count = 0;
         uint hash = uint(blockhash(challengeBlockNumber));

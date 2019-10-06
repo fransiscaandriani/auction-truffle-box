@@ -46,10 +46,6 @@ class App extends Component {
   runExample = async () => {
     const { account, web3, contract } = this.state;
 
-    // const pedersen = new web3.eth.Contract(
-    //   Pedersen.abi,
-    //   "0xc199662A3BB514a79889D161280290020FD41B36"
-    // );
     // const commit = await pedersen.methods
     //   .Commit(10000000000000, 22030291809)
     //   .call();

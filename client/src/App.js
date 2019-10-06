@@ -1,34 +1,38 @@
 import React, { Component } from "react";
-import BlindAuctionContract from "./contracts/BlindAuction.json";
+import AuctionFactory from "./contracts/AuctionFactory.json";
+import Auction from "./contracts/Auction.json";
+import Pedersen from "./contracts/Pedersen.json";
 import getWeb3 from "./utils/getWeb3";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import {
+  getAuctionFactoryContract,
+  getPedersenContract,
+  getAuctionContract
+} from "./utils/getContracts";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import AuctionList from "./components/AuctionList";
-import Auction from "./components/Auction";
+import AuctionPage from "./components/AuctionPage";
 import TopAppBar from "./components/TopAppBar";
+import { mockAuction, createAuction } from "./service/auctionService";
 import "./App.css";
 
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+  state = { storageValue: 0, web3: null, account: null, contract: null };
 
   componentDidMount = async () => {
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
 
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
+      // Get the AuctionFactory contract instance.
+      const instance = getAuctionFactoryContract(web3);
 
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = BlindAuctionContract.networks[networkId];
-      const instance = new web3.eth.Contract(
-        BlindAuctionContract.abi,
-        deployedNetwork && deployedNetwork.address
-      );
+      // Use web3 to get the user's account
+      var accounts = await web3.eth.getAccounts();
+
+      this.setState({ web3, account: accounts[0], contract: instance });
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance });
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -36,26 +40,43 @@ class App extends Component {
       );
       console.error(error);
     }
-    // this.runExample();
+    this.runExample();
   };
 
   runExample = async () => {
-    const { accounts, web3, contract } = this.state;
+    const { account, web3, contract } = this.state;
+
+    const pedersen = new web3.eth.Contract(
+      Pedersen.abi,
+      "0xc199662A3BB514a79889D161280290020FD41B36"
+    );
+    const commit = await pedersen.methods
+      .Commit(10000000000000, 22030291809)
+      .call();
+    console.log(commit);
 
     // Stores a given value, 5 by default.
-    const _blindedBid = web3.utils.soliditySha3(10, false, "abcd");
-    contract.methods
-      .bid(_blindedBid)
-      .send({ from: accounts[0], value: web3.utils.toWei("5") });
+    // const _blindedBid = web3.utils.soliditySha3(10, false, "abcd");
+    // createAuction(accounts[0], web3, contract);
+    const auction = new web3.eth.Contract(
+      Auction.abi,
+      "0x9745Fdc0F354FE7B13996039600239A5Bb0754cb"
+    );
+    console.log(auction.methods.auctioneerAddress().call());
 
-    // await contract.methods.set(5).send({ from: accounts[0] });
-    console.log(accounts[0]);
+    // await auction.methods
+    //   .Bid(commit.cX, commit.cY)
+    //   .send({ from: accounts[0], value: 5000000000 });
+
+    console.log(auction.methods.bidders(account).call());
+
+    // const auctionContract = auction[2];
+    // console.log(auction.methods.auctioneerAddress().call());
+
+    console.log(account);
     // Get the value from the contract to prove it worked.
     // const response = await contract.methods
-    //   .bids(
-    //     "0c2cfdd55a47ea9b11f4620b51a7d536a99394a2808cae18cf4928fa5bbacb50",
-    //     0
-    //   )
+    //   .bids("0x0cf10F3A684c9A4E080F34289995ff9cB3b352E0", 0)
     //   .call();
     // console.log(response);
 
@@ -88,7 +109,7 @@ class App extends Component {
               </Route>
               <Route path="/auction">
                 <TopAppBar />
-                <Auction />
+                <AuctionPage />
               </Route>
             </Switch>
           </div>

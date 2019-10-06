@@ -33,7 +33,7 @@ contract AuctionFactory {
         return auctionsAddresses;
     }
 
-    function getAuction(address _address) public view returns (string memory, string memory, Auction){
-      return (auctions[_address].name, auctions[_address].desc, auctions[_address].auctionContract);
+    function getAuctionData(address _address) public view returns (string memory, string memory){
+      return (auctions[_address].name, auctions[_address].desc);
     }
 }

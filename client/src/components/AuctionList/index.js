@@ -33,15 +33,15 @@ function AuctionList() {
       try {
         // Get web3 instance.
         const loadedWeb3 = await getLoadedWeb3();
-        setWeb3(loadedWeb3);
 
         // Get Auction Factory contract
-        const contract = await getAuctionFactoryContract(web3);
+        const contract = await getAuctionFactoryContract(loadedWeb3);
         setAuctionFactoryContract(contract);
 
         // Get All Auctions
         const auctionsData = await getAllAuctionsData(contract);
         setAuctionList(auctionsData);
+        console.log("auctionsdata:", auctionsData);
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(

@@ -32,15 +32,15 @@ function AuctionList() {
     async function fetchData() {
       try {
         // Get web3 instance.
-        const web3 = await getLoadedWeb3();
-        setWeb3(web3);
+        const loadedWeb3 = await getLoadedWeb3();
+        setWeb3(loadedWeb3);
 
         // Get Auction Factory contract
         const contract = await getAuctionFactoryContract(web3);
         setAuctionFactoryContract(contract);
 
         // Get All Auctions
-        const auctionsData = await getAllAuctionsData(web3, contract);
+        const auctionsData = await getAllAuctionsData(contract);
         setAuctionList(auctionsData);
       } catch (error) {
         // Catch any errors for any of the above operations.
@@ -55,10 +55,10 @@ function AuctionList() {
 
   const renderAuctions = () => {
     if (auctionList.length > 0) {
-      const auctionCards = auctionList.map(
-        auction => (console.log(auction), <AuctionCard {...auction} />)
-      );
-      return { auctionCards };
+      const auctionCards = auctionList.map(auction => (
+        <AuctionCard {...auction} />
+      ));
+      return auctionCards;
     } else return null;
   };
 
@@ -67,13 +67,12 @@ function AuctionList() {
       <Typography className={classes.title} variant="h2" component="h1">
         Auctions
       </Typography>
-      {console.log(auctionList)}
       {renderAuctions()}
+      {/* <AuctionCard {...mockAuction} />
       <AuctionCard {...mockAuction} />
       <AuctionCard {...mockAuction} />
       <AuctionCard {...mockAuction} />
-      <AuctionCard {...mockAuction} />
-      <AuctionCard {...mockAuction} />
+      <AuctionCard {...mockAuction} /> */}
     </div>
   );
 }

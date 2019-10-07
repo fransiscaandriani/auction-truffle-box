@@ -81,8 +81,10 @@ function AuctionPage() {
 
   const placeNewBid = async () => {
     const cipher = await placeBid(account, web3, auctionContract, bid);
-    setCipher(cipher);
-    setOpenModal(true);
+    if (cipher !== null) {
+      setCipher(cipher);
+      setOpenModal(true);
+    }
   };
 
   // // used for testing if the modal will appear

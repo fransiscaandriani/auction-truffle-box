@@ -93,11 +93,15 @@ export default function CipherModal(props) {
         open={openModal}
       >
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Keep this value! You will only see this once.
+          Keep this cipher! You will only see this once.
         </DialogTitle>
         <DialogContent dividers>
           {/* <Typography gutterBottom>{cipherText}</Typography> */}
-          <input className="cipher-modal" ref={cipherRef} value={cipherText} />
+          <textarea
+            className="cipher-modal"
+            ref={cipherRef}
+            value={cipherText}
+          ></textarea>
         </DialogContent>
         <DialogActions>
           <Button onClick={copyToClipboard} color="primary">

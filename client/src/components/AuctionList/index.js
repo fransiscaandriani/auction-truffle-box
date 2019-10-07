@@ -35,7 +35,6 @@ function AuctionList() {
 
         // Get Auction Factory contract
         const contract = await getAuctionFactoryContract(loadedWeb3);
-        setAuctionFactoryContract(contract);
 
         // Get All Auctions
         const auctionsData = await getAllAuctionsData(contract);
@@ -55,7 +54,7 @@ function AuctionList() {
   const renderAuctions = () => {
     if (auctionList.length > 0) {
       const auctionCards = auctionList.map(auction => (
-        <AuctionCard {...auction} />
+        <AuctionCard {...auction} key={auction.address} />
       ));
       return auctionCards;
     } else return null;

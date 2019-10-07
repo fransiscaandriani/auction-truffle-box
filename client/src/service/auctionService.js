@@ -60,7 +60,7 @@ export async function getAllAuctionsData(contract) {
   //   auctionsData.push(data);
   // });
 
-  return { data: auctionsData };
+  return auctionsData;
 }
 
 export async function getAuctionData(web3, auctionAddress, account) {

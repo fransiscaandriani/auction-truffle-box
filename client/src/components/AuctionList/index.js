@@ -24,8 +24,8 @@ const useStyles = makeStyles({
 
 function AuctionList() {
   const classes = useStyles();
-  const [auctionList, setAuctionList] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [auctionList, setAuctionList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -35,7 +35,7 @@ function AuctionList() {
         // Get All Auctions
         setIsLoading(true);
         const auctionsData = await getAllAuctionsData(web3);
-        setAuctionList(auctionsData);
+        await setAuctionList(auctionsData.data);
         setIsLoading(false);
       } catch (error) {
         // Catch any errors for any of the above operations.
@@ -59,21 +59,22 @@ function AuctionList() {
 
   if (isLoading) {
     return null;
+  } else {
+    return (
+      <div className={classes["page-container"]}>
+        <Typography className={classes.title} variant="h2" component="h1">
+          Auctions
+        </Typography>
+        {console.log(auctionList)}
+        {renderAuctions()}
+        <AuctionCard {...mockAuction} />
+        <AuctionCard {...mockAuction} />
+        <AuctionCard {...mockAuction} />
+        <AuctionCard {...mockAuction} />
+        <AuctionCard {...mockAuction} />
+      </div>
+    );
   }
-  return (
-    <div className={classes["page-container"]}>
-      <Typography className={classes.title} variant="h2" component="h1">
-        Auctions
-      </Typography>
-      {console.log(auctionList.length)}
-      {renderAuctions()}
-      <AuctionCard {...mockAuction} />
-      <AuctionCard {...mockAuction} />
-      <AuctionCard {...mockAuction} />
-      <AuctionCard {...mockAuction} />
-      <AuctionCard {...mockAuction} />
-    </div>
-  );
 }
 
 export default AuctionList;

@@ -55,6 +55,18 @@ contract Auction {
         testing = _testing;
     }
 
+    function BidderData(address account) public view returns(bool, bool, bool, bool) {
+      bool hasBid = bidders[account].existing;
+      bool paidBack = bidders[account].paidBack;
+      bool bidderExceeds = indexs.length>=maxBiddersCount;
+      bool isWinner = account == winner;
+      return(hasBid, bidderExceeds, paidBack, isWinner);
+    }
+
+    function AuctionData() public view returns(uint, uint, uint, uint){
+      return(bidEndTime, revealTime, winnerPaymentTime, fairnessFees);
+    }
+
     function Bid(uint cX, uint cY) public payable
     onlyBefore(bidEndTime)
     {

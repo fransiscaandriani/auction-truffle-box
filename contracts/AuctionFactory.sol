@@ -10,7 +10,6 @@ contract AuctionFactory {
     }
     address[] public auctionsAddresses;
     mapping (address => AuctionData) auctions;
-    mapping(address => address[]) bidders;
     address public pedersen;
 
     event AuctionCreated(address auctionContract, address owner, uint numAuctions, address[] allAuctions);

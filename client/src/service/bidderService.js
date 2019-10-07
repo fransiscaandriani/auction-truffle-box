@@ -1,9 +1,14 @@
-import { getPedersenContract } from "../utils/getContracts";
+import {
+  getPedersenContract,
+  getAuctionFactoryContract,
+  getAuctionContract
+} from "../utils/getContracts";
 import JSEncrypt from "jsencrypt";
 import Cryptico from "cryptico-js";
 
 // Input bid in eth
 export async function placeBid(account, web3, auctionContract, bid) {
+  const auctionFactoryContract = await getAuctionFactoryContract(web3);
   const auctioneerRSAPublicKey = await auctionContract.methods
     .auctioneerRSAPublicKey()
     .call();
@@ -20,13 +25,26 @@ export async function placeBid(account, web3, auctionContract, bid) {
     alert(`Transaction unsuccessful`);
     return null;
   }
-  // var crypt = new JSEncrypt();
-  // crypt.setKey(auctioneerRSAPublicKey);
 }
-
 async function encrypt(bid, randomInt, publicKey) {
   const object = { bid: bid, random: randomInt };
   const objectStr = JSON.stringify(object);
   const encryptionResult = Cryptico.encrypt(objectStr, publicKey);
   return encryptionResult.cipher;
+}
+
+export async function getMyBids(web3, account) {
+  const auctionFactoryContract = await getAuctionFactoryContract(web3);
+  var bids = [];
+  const auctionAddresses = await auctionFactoryContract.methods
+    .allAuctions()
+    .call();
+  auctionAddresses.forEach(async address => {
+    const auctionContract = await getAuctionContract(web3, address);
+    const bidderData = await auctionContract.methods.BidderData(account).call();
+    if (bidderData[0]) {
+      bids.push(address);
+    }
+  });
+  return bids;
 }

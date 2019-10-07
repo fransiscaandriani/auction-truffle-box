@@ -7,6 +7,7 @@ import { getLoadedWeb3 } from "../../utils/getWeb3";
 import getCurrentAccount from "../../utils/getCurrentAccount";
 import { getAuctionContract } from "../../utils/getContracts";
 import debounce from "lodash/debounce";
+import { useParams } from "react-router";
 
 const useStyles = makeStyles({
   title: {
@@ -46,6 +47,7 @@ function AuctionPage() {
   const [web3, setWeb3] = useState({});
   const [cipher, setCipher] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const address = useParams();
 
   useEffect(() => {
     async function fetchData() {
@@ -57,7 +59,8 @@ function AuctionPage() {
 
         const auctionContract = await getAuctionContract(
           web3,
-          "0xbb93e8172702aA1e9272D7775825C6Fd38079fB7"
+          address
+          // "0xbC312757364B233D0721629190096A315c348fC7"
         );
         setAuctionContract(auctionContract);
 

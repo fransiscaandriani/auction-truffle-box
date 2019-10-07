@@ -1,4 +1,5 @@
 import Cryptico from "cryptico-js";
+import { getAuctionFactoryContract } from "../utils/getContracts";
 
 const mockAuction = {
   name: "Mock Auction with correct public key",
@@ -40,8 +41,9 @@ export async function createAuction(
     });
 }
 
-export async function getAllAuctionsData(web3, contract) {
+export async function getAllAuctionsData(web3) {
   var auctionsData = [];
+  const contract = await getAuctionFactoryContract(web3);
   const auctionsAddresses = await contract.methods.allAuctions().call();
   auctionsAddresses.forEach(async function(address) {
     const temp = await contract.methods.getAuctionData(address).call();
@@ -51,3 +53,5 @@ export async function getAllAuctionsData(web3, contract) {
 
   return auctionsData;
 }
+
+// export async function getAuctionData(web3, a)

@@ -24,24 +24,19 @@ const useStyles = makeStyles({
 
 function AuctionList() {
   const classes = useStyles();
-  const [auctionList, setAuctionList] = useState([]);
-  const [web3, setWeb3] = useState({});
-  const [auctionFactoryContract, setAuctionFactoryContract] = useState({});
+  const [auctionList, setAuctionList] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
         // Get web3 instance.
         const web3 = await getLoadedWeb3();
-        setWeb3(web3);
-
-        // Get Auction Factory contract
-        const contract = await getAuctionFactoryContract(web3);
-        setAuctionFactoryContract(contract);
-
         // Get All Auctions
-        const auctionsData = await getAllAuctionsData(web3, contract);
+        setIsLoading(true);
+        const auctionsData = await getAllAuctionsData(web3);
         setAuctionList(auctionsData);
+        setIsLoading(false);
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(
@@ -62,12 +57,15 @@ function AuctionList() {
     } else return null;
   };
 
+  if (isLoading) {
+    return null;
+  }
   return (
     <div className={classes["page-container"]}>
       <Typography className={classes.title} variant="h2" component="h1">
         Auctions
       </Typography>
-      {console.log(auctionList)}
+      {console.log(auctionList.length)}
       {renderAuctions()}
       <AuctionCard {...mockAuction} />
       <AuctionCard {...mockAuction} />

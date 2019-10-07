@@ -1,5 +1,8 @@
 import Cryptico from "cryptico-js";
-import { getAuctionFactoryContract } from "../utils/getContracts";
+import {
+  getAuctionFactoryContract,
+  getAuctionContract
+} from "../utils/getContracts";
 
 const mockAuction = {
   name: "Mock Auction with correct public key",
@@ -51,7 +54,34 @@ export async function getAllAuctionsData(web3) {
     auctionsData.push(data);
   });
 
-  return auctionsData;
+  return { data: auctionsData };
 }
 
-// export async function getAuctionData(web3, a)
+export async function getAuctionData(web3, auctionAddress, account) {
+  var auctionData = {};
+  const auctionFactoryContract = await getAuctionFactoryContract(web3);
+  const contract = await getAuctionContract(web3, auctionAddress);
+
+  // Name and description, stored in auction factory
+  const nameDescList = await auctionFactoryContract.methods
+    .getAuctionData(auctionAddress)
+    .call();
+  auctionData.name = nameDescList[0];
+  auctionData.desc = nameDescList[1];
+
+  // Auction related cariables
+  const auctionVars = await contract.methods.AuctionData().call();
+  auctionData.bidEndTime = auctionVars[0];
+  auctionData.revealTime = auctionVars[1];
+  auctionData.winnerPaymentTime = auctionVars[2];
+  auctionData.fairnessFees = auctionVars[3];
+
+  // Bidder related data
+  const bidderVars = await contract.methods.BidderData(account).call();
+  auctionData.hasbid = bidderVars[0];
+  auctionData.bidderExceeds = bidderVars[1];
+  auctionData.paidBack = bidderVars[2];
+  auctionData.isWinner = bidderVars[3];
+
+  return auctionData;
+}

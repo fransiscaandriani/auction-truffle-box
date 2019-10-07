@@ -47,11 +47,10 @@ function AuctionPage() {
   const [web3, setWeb3] = useState({});
   const [cipher, setCipher] = useState("");
   const [openModal, setOpenModal] = useState(false);
-  const address = useParams();
+  const { address } = useParams();
 
   useEffect(() => {
     async function fetchData() {
-      console.log("inside fetch data");
       try {
         // Get network provider and web3 instance.
         const web3 = await getLoadedWeb3();
@@ -62,6 +61,7 @@ function AuctionPage() {
           address
           // "0xbC312757364B233D0721629190096A315c348fC7"
         );
+        console.log(auctionContract);
         setAuctionContract(auctionContract);
 
         const account = await getCurrentAccount(web3);

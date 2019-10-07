@@ -8,7 +8,7 @@ import Cryptico from "cryptico-js";
 
 // Input bid in eth
 export async function placeBid(account, web3, auctionContract, bid) {
-  const auctionFactoryContract = await getAuctionFactoryContract(web3);
+  console.log("aucion", auctionContract);
   const auctioneerRSAPublicKey = await auctionContract.methods
     .auctioneerRSAPublicKey()
     .call();
@@ -48,3 +48,5 @@ export async function getMyBids(web3, account) {
   });
   return bids;
 }
+
+export async function revealBid(auctionContract, account, cipher) {}

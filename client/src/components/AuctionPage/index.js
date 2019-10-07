@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container, Typography, Button, TextField } from "@material-ui/core";
+import CipherModal from "../CipherModal";
 import { placeBid } from "../../service/bidderService";
 import { getLoadedWeb3 } from "../../utils/getWeb3";
 import getCurrentAccount from "../../utils/getCurrentAccount";
@@ -44,26 +45,23 @@ function AuctionPage() {
   const [auctionContract, setAuctionContract] = useState({});
   const [web3, setWeb3] = useState({});
   const [cipher, setCipher] = useState("");
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       console.log("inside fetch data");
       try {
         // Get network provider and web3 instance.
-        console.log("inside try");
         const web3 = await getLoadedWeb3();
-        console.log("web3", web3);
         setWeb3(web3);
 
         const auctionContract = await getAuctionContract(
           web3,
-          "0x13c86Eb528226346E523a5fC8aD7fe299360bf0d"
+          "0xbb93e8172702aA1e9272D7775825C6Fd38079fB7"
         );
         setAuctionContract(auctionContract);
-        console.log("auction cotnract: ", auctionContract);
 
         const account = await getCurrentAccount(web3);
-        console.log("account: ", account);
         setAccount(account);
       } catch (error) {
         // Catch any errors for any of the above operations.
@@ -73,8 +71,6 @@ function AuctionPage() {
         console.error(error);
       }
     }
-
-    console.log("inside usestate");
     fetchData();
   }, []);
 
@@ -85,21 +81,21 @@ function AuctionPage() {
 
   const placeNewBid = async () => {
     const cipher = await placeBid(account, web3, auctionContract, bid);
-    setCipher(cipher);
+    if (cipher !== null) {
+      setCipher(cipher);
+      setOpenModal(true);
+    }
   };
 
-  console.log("account:", account);
-
-  console.log("bid", bid);
+  // // used for testing if the modal will appear
+  // useEffect(() => {
+  //   setTimeout(() => setOpenModal(true), 5000);
+  //   setTimeout(() => setCipher("123l1jl 3n12l3n1l n13ln"), 2000);
+  // }, []);
 
   const renderCipher = () => {
-    console.log("cipher", cipher);
     if (cipher !== "") {
-      return (
-        <Typography className={classes.end} variant="h5">
-          Cipher: {cipher}
-        </Typography>
-      );
+      return <CipherModal open={openModal} cipherText={cipher} />;
     } else return null;
   };
 

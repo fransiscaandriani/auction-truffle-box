@@ -31,12 +31,16 @@ function AuctionList() {
     async function fetchData() {
       try {
         // Get web3 instance.
-        const web3 = await getLoadedWeb3();
+        const loadedWeb3 = await getLoadedWeb3();
+
+        // Get Auction Factory contract
+        const contract = await getAuctionFactoryContract(loadedWeb3);
+        setAuctionFactoryContract(contract);
+
         // Get All Auctions
-        setIsLoading(true);
-        const auctionsData = await getAllAuctionsData(web3);
-        await setAuctionList(auctionsData.data);
-        setIsLoading(false);
+        const auctionsData = await getAllAuctionsData(contract);
+        setAuctionList(auctionsData);
+        console.log("auctionsdata:", auctionsData);
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(
@@ -50,31 +54,26 @@ function AuctionList() {
 
   const renderAuctions = () => {
     if (auctionList.length > 0) {
-      const auctionCards = auctionList.map(
-        auction => (console.log(auction), <AuctionCard {...auction} />)
-      );
-      return { auctionCards };
+      const auctionCards = auctionList.map(auction => (
+        <AuctionCard {...auction} />
+      ));
+      return auctionCards;
     } else return null;
   };
 
-  if (isLoading) {
-    return null;
-  } else {
-    return (
-      <div className={classes["page-container"]}>
-        <Typography className={classes.title} variant="h2" component="h1">
-          Auctions
-        </Typography>
-        {console.log(auctionList)}
-        {renderAuctions()}
-        <AuctionCard {...mockAuction} />
-        <AuctionCard {...mockAuction} />
-        <AuctionCard {...mockAuction} />
-        <AuctionCard {...mockAuction} />
-        <AuctionCard {...mockAuction} />
-      </div>
-    );
-  }
+  return (
+    <div className={classes["page-container"]}>
+      <Typography className={classes.title} variant="h2" component="h1">
+        Auctions
+      </Typography>
+      {renderAuctions()}
+      {/* <AuctionCard {...mockAuction} />
+      <AuctionCard {...mockAuction} />
+      <AuctionCard {...mockAuction} />
+      <AuctionCard {...mockAuction} />
+      <AuctionCard {...mockAuction} /> */}
+    </div>
+  );
 }
 
 export default AuctionList;

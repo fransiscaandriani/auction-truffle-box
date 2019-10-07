@@ -44,15 +44,21 @@ export async function createAuction(
     });
 }
 
-export async function getAllAuctionsData(web3) {
-  var auctionsData = [];
-  const contract = await getAuctionFactoryContract(web3);
+export async function getAllAuctionsData(contract) {
+  const auctionsData = [];
   const auctionsAddresses = await contract.methods.allAuctions().call();
-  auctionsAddresses.forEach(async function(address) {
-    const temp = await contract.methods.getAuctionData(address).call();
-    const data = { address: address, name: temp[0], desc: temp[1] };
-    auctionsData.push(data);
-  });
+  await Promise.all(
+    auctionsAddresses.map(async address => {
+      const temp = await contract.methods.getAuctionData(address).call();
+      const data = { address: address, name: temp[0], desc: temp[1] };
+      auctionsData.push(data);
+    })
+  );
+  // auctionsAddresses.forEach(async function(address) {
+  //   const temp = await contract.methods.getAuctionData(address).call();
+  //   const data = { address: address, name: temp[0], desc: temp[1] };
+  //   auctionsData.push(data);
+  // });
 
   return { data: auctionsData };
 }

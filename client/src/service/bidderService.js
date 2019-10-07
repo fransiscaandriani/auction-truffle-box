@@ -49,4 +49,11 @@ export async function getMyBids(web3, account) {
   return bids;
 }
 
-export async function revealBid(auctionContract, account, cipher) {}
+export async function revealBid(auctionContract, account, cipher) {
+  try {
+    auctionContract.methods.Reveal(cipher).send({ from: account });
+  } catch (e) {
+    alert(`Reveal bid unsuccessful`);
+    console.log(e);
+  }
+}

@@ -14,7 +14,7 @@ export async function placeBid(account, web3, auctionContract, bid) {
     .call();
   const fee = await auctionContract.methods.fairnessFees().call();
   const pedersen = await getPedersenContract(web3);
-  const randomInt = Math.floor((Math.random * 10) ^ 8);
+  const randomInt = Math.floor(Math.random() * 10 ** 10);
   const commit = await pedersen.methods.Commit(bid, randomInt).call();
   try {
     await auctionContract.methods

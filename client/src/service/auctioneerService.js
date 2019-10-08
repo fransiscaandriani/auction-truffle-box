@@ -90,6 +90,7 @@ async function challenge(
     let blockHash = "00";
     console.log(commits.length);
     console.log(deltaCommits.length);
+    console.log(bidder);
     await auctionContract.methods
       .ZKPCommit(bidder.address, commits, deltaCommits)
       .send({ from: account })
@@ -175,32 +176,47 @@ export async function prove(web3, account, auctionContract, passphrase) {
 
   // iterate for each bidder
   biddersAddresses.map(async bidderAddress => {
-    const challenges = await generateChallenges(K, Q, maxBid, pedersenContract);
-    const deltaChallenges = await generateChallenges(
-      K,
-      Q,
-      maxBid,
-      pedersenContract
-    );
-    if (bidderAddress != winner.address) {
-      // get bidder's bid and random
-      const bidder = await auctionContract.methods
-        .bidders(bidderAddress)
-        .call();
-      const decrypted = decrypt(bidder.cipher, rsaKey);
-      decrypted.address = bidderAddress;
-      await challenge(
-        account,
-        decrypted,
-        K,
-        Q,
-        maxBid,
-        winner,
-        auctionContract,
-        challenges,
-        deltaChallenges
-      );
+    async function proveBidder() {
+      if (bidderAddress != winner.address) {
+        const challengesPromise = await generateChallenges(
+          K,
+          Q,
+          maxBid,
+          pedersenContract
+        );
+        // const challenges = await Promise.All(challengesPromise);
+
+        console.log("challenges", challenges);
+        const deltaChallengesPromise = await generateChallenges(
+          K,
+          Q,
+          maxBid,
+          pedersenContract
+        );
+        // const deltaChallenges = await Promise.All(deltaChallengesPromise);
+
+        // get bidder's bid and random
+        const bidder = await auctionContract.methods
+          .bidders(bidderAddress)
+          .call();
+        console.log("bidder out", bidder);
+        const decrypted = decrypt(bidder.cipher, rsaKey);
+        console.log("decrypted", decrypted);
+        decrypted.address = bidderAddress;
+        await challenge(
+          account,
+          decrypted,
+          K,
+          Q,
+          maxBid,
+          winner,
+          auctionContract,
+          challenges,
+          deltaChallenges
+        );
+      }
     }
+    return proveBidder();
   });
 
   // biddersAddresses.map(async bidderAddress => {

@@ -1,17 +1,21 @@
 import React, { Component } from "react";
 import Auction from "./contracts/Auction.json";
 import Pedersen from "./contracts/Pedersen.json";
-import getWeb3 from "./utils/getWeb3";
+import { getWeb3 } from "./utils/getWeb3";
 import {
   getAuctionFactoryContract,
   getPedersenContract,
   getAuctionContract
 } from "./utils/getContracts";
+
+import { revealBid } from "./service/bidderService";
+import { getWinner, claimWinner } from "./service/auctioneerService";
 import getCurrentAccount from "./utils/getCurrentAccount";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import AuctionList from "./components/AuctionList";
 import AuctionPage from "./components/AuctionPage";
 import TopAppBar from "./components/TopAppBar";
+import CreateAuctionPage from "./components/CreateAuctionPage";
 import { mockAuction, createAuction, placeBid } from "./service/auctionService";
 import "./App.css";
 
@@ -103,9 +107,13 @@ class App extends Component {
                 <TopAppBar />
                 <AuctionList />
               </Route>
-              <Route path="/auction">
+              <Route path="/auction/:address">
                 <TopAppBar />
                 <AuctionPage />
+              </Route>
+              <Route path="/new-auction">
+                <TopAppBar />
+                <CreateAuctionPage />
               </Route>
             </Switch>
           </div>

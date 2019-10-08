@@ -5,7 +5,7 @@ contract Auction {
     struct Bidder {
         uint commitX;
         uint commitY;
-        bytes cipher;
+        string cipher;
         bool validProofs;
         bool paidBack;
         bool existing;
@@ -67,6 +67,10 @@ contract Auction {
       return(bidEndTime, revealTime, winnerPaymentTime, fairnessFees);
     }
 
+    function BiddersAddresses() public view returns(address[] memory){
+      return indexs;
+    }
+
     function Bid(uint cX, uint cY) public payable
     onlyBefore(bidEndTime)
     {
@@ -76,11 +80,11 @@ contract Auction {
         bidders[msg.sender] = Bidder(cX, cY,"", false, false,true);
         indexs.push(msg.sender);
     }
-    function Reveal(bytes memory cipher) public
+    function Reveal(string memory cipher) public
     onlyBefore(revealTime)
     onlyAfter(bidEndTime)
     {
-        require(bidders[msg.sender].existing ==true); //existing bidder
+        require(bidders[msg.sender].existing == true, "Bidder does not exist"); //existing bidder
         bidders[msg.sender].cipher = cipher;
     }
 
@@ -200,6 +204,6 @@ contract Auction {
         _;
     }
 
-    modifier onlyBefore(uint _time) {require(now < _time || testing); _;}
-    modifier onlyAfter(uint _time) {require(now > _time || testing); _;}
+    modifier onlyBefore(uint _time) {require(now < _time || testing, "Not time yet"); _;}
+    modifier onlyAfter(uint _time) {require(now > _time || testing, "Time has passed"); _;}
 }

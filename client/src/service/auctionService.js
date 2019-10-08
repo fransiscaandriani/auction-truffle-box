@@ -13,7 +13,6 @@ const mockAuction = {
   maxBiddersCount: 20,
   fairnessFees: 5000000000,
   passphrase: "abcdefgh",
-  k: 10,
   testing: true
 };
 
@@ -35,7 +34,7 @@ export async function createAuction(
       auctionData.maxBiddersCount,
       auctionData.fairnessFees,
       publicKey,
-      auctionData.k,
+      10,
       auctionData.testing
     )
     .send({

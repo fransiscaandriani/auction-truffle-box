@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
-import clsx from "clsx";
+import React, { useEffect, useState } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -9,7 +8,6 @@ import MuiDialogActions from "@material-ui/core/DialogActions";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
 import "./index.css";
 
 const styles = theme => ({
@@ -69,24 +67,18 @@ export default function CipherModal(props) {
     setOpenModal(false);
   };
 
-  const [copySuccess, setCopySuccess] = useState("");
   const cipherRef = useState(null);
 
   function copyToClipboard(e) {
-    console.log("copy to clipboard");
     cipherRef.current.select();
     document.execCommand("copy");
     // This is just personal preference.
     // I prefer to not show the the whole text area selected.
     e.target.focus();
-    setCopySuccess("Copied!");
   }
 
   return (
     <div>
-      {/* <Button variant="outlined" color="secondary" onClick={handleClickOpen}>
-        Open dialog
-      </Button> */}
       <Dialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -96,7 +88,6 @@ export default function CipherModal(props) {
           Keep this cipher! You will only see this once.
         </DialogTitle>
         <DialogContent dividers>
-          {/* <Typography gutterBottom>{cipherText}</Typography> */}
           <textarea
             className="cipher-modal"
             ref={cipherRef}

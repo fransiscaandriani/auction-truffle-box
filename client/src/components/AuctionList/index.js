@@ -6,11 +6,6 @@ import { getAllAuctionsData } from "../../service/auctionService";
 import { getLoadedWeb3 } from "../../utils/getWeb3";
 import { getAuctionFactoryContract } from "../../utils/getContracts";
 
-const mockAuction = {
-  name: "Splendid Art",
-  desc: "One of a kind classic painting from 1860 era"
-};
-
 const useStyles = makeStyles({
   title: {
     textAlign: "center",
@@ -25,7 +20,6 @@ const useStyles = makeStyles({
 function AuctionList() {
   const classes = useStyles();
   const [auctionList, setAuctionList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {

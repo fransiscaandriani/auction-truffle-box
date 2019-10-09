@@ -3,7 +3,6 @@ import {
   getAuctionFactoryContract,
   getAuctionContract
 } from "../utils/getContracts";
-import JSEncrypt from "jsencrypt";
 import Cryptico from "cryptico-js";
 
 // Input bid in eth

@@ -1,5 +1,4 @@
 import Cryptico from "cryptico-js";
-import { getPedersenContract } from "../utils/getContracts";
 /* global BigInt */
 
 export async function getWinner(auctionContract, passphrase) {
@@ -29,7 +28,6 @@ function decrypt(cipher, rsaKey) {
     return obj;
   } catch (error) {
     return null;
-    console.log(error);
   }
 }
 
@@ -96,11 +94,11 @@ async function challenge(
     //turn hexadecimal to decimal
     const challenge = blockHash.toString(16);
 
-    const mask = 1;
+    let mask = 1;
     const responses = [];
     //pushing responses
     for (let i = 0, j = 0; i < K; i++, j += 4) {
-      if ((challenge & mask) == 0) {
+      if ((challenge & mask) === 0) {
         Array.prototype.apply(responses, [
           opens[j],
           opens[j + 1],
@@ -108,9 +106,9 @@ async function challenge(
           opens[j + 3]
         ]);
       } else {
-        const m = opens[j] + bidder.bid;
-        const n = opens[j + 1] + bidder.random;
-        const z = 1;
+        let m = opens[j] + bidder.bid;
+        let n = opens[j + 1] + bidder.random;
+        let z = 1;
         if (m > maxBid || m <= 0) {
           z = 2;
           m = opens[j + 2] + bidder.bid;
@@ -124,7 +122,7 @@ async function challenge(
     const deltaResponses = [];
     //pushing deltaResponses
     for (let i = 0, j = 0; i < K; i++, j += 4) {
-      if ((challenge & mask) == 0) {
+      if ((challenge & mask) === 0) {
         Array.prototype.apply(deltaResponses, [
           deltaOpens[j],
           deltaOpens[j + 1],
@@ -132,11 +130,11 @@ async function challenge(
           deltaOpens[j + 3]
         ]);
       } else {
-        const diff = winner.bid - bidder.bid;
+        let diff = winner.bid - bidder.bid;
         if (diff < 0) diff += Q;
-        const m = deltaOpens[j] + diff;
-        const n = deltaOpens[j + 1] + winner.random - bidder.random;
-        const z = 1;
+        let m = deltaOpens[j] + diff;
+        let n = deltaOpens[j + 1] + winner.random - bidder.random;
+        let z = 1;
         if (m > maxBid || m < 0) {
           z = 2;
           m = deltaOpens[j + 2] + diff; // bidders[winnerIndex].Bid - x.Bid;
@@ -176,7 +174,7 @@ async function getBidders(
         .call();
       const decrypted = decrypt(bidder.cipher, rsaKey);
       decrypted.address = bidderAddress;
-      if (bidderAddress != winner.address) {
+      if (bidderAddress !== winner.address) {
         const challenges = await generateChallenges(
           K,
           Q,
@@ -223,7 +221,7 @@ export async function prove(
       result[0]
     );
     bidders.forEach(async bidder => {
-      if (bidder.address != result[0].address) {
+      if (bidder.address !== result[0].address) {
         await challenge(
           account,
           bidder,

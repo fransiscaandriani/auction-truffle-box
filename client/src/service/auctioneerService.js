@@ -40,30 +40,30 @@ export async function claimWinner(auctionContract, winner, account) {
     .send({ from: account });
 }
 
-export async function generateChallenges(K, Q, maxBid, pedersenContract) {
+async function generateChallenges(K, Q, maxBid, pedersenContract) {
   const commits = [];
   const opens = [];
-  const iterator = [1, 1, 1, 1, 1, 1, 1];
-  Promise.all(
-    iterator.map(async i => {
-      console.log("inside");
-      const w1 = BigInt(Math.floor(Math.random() * 10 ** 80));
-      const w2 = BigInt(Q) - (BigInt(w1) - BigInt(maxBid));
-      const r1 = BigInt(Math.floor(Math.random() * 10 ** 80));
-      const r2 = BigInt(Math.floor(Math.random() * 10 ** 80));
-      console.log("w1, w2, r1, r2", Q, w1, maxBid);
-      console.log("here", pedersenContract);
-      const cW1 = await pedersenContract.methods
-        .Commit(w1.toString(), r1.toString())
-        .call();
-      const cW2 = await pedersenContract.methods
-        .Commit(w2.toString(), r2.toString())
-        .call();
+  const iterator = Array.from("1".repeat(K));
+  const makeChallenges = () =>
+    Promise.all(
+      iterator.map(async i => {
+        console.log("inside");
+        const w1 = BigInt(Math.floor(Math.random() * 10 ** 80));
+        const w2 = BigInt(Q) - (BigInt(w1) - BigInt(maxBid));
+        const r1 = BigInt(Math.floor(Math.random() * 10 ** 80));
+        const r2 = BigInt(Math.floor(Math.random() * 10 ** 80));
+        const cW1 = await pedersenContract.methods
+          .Commit(w1.toString(), r1.toString())
+          .call();
+        const cW2 = await pedersenContract.methods
+          .Commit(w2.toString(), r2.toString())
+          .call();
 
-      Array.prototype.push.apply(commits, [cW1.cX, cW1.cY, cW2.cX, cW2.cY]);
-      Array.prototype.push.apply(opens, [w1, r1, w2, r2]);
-    })
-  );
+        Array.prototype.push.apply(commits, [cW1.cX, cW1.cY, cW2.cX, cW2.cY]);
+        Array.prototype.push.apply(opens, [w1, r1, w2, r2]);
+      })
+    );
+  await makeChallenges();
   return { commits: commits, opens: opens };
 }
 
@@ -74,23 +74,18 @@ async function challenge(
   Q,
   maxBid,
   winner,
-  auctionContract,
-  challenges,
-  deltaChallenges
+  auctionContract
 ) {
   // get commits and opens
-  const commits = challenges.commits;
-  const opens = challenges.opens;
+  const commits = bidder.challenges.commits;
+  const opens = bidder.challenges.opens;
 
   // get delta commits and delta opens
-  const deltaCommits = deltaChallenges.commits;
-  const deltaOpens = deltaChallenges.opens;
+  const deltaCommits = bidder.deltaChallenges.commits;
+  const deltaOpens = bidder.deltaChallenges.opens;
 
   try {
     let blockHash = "00";
-    console.log(commits.length);
-    console.log(deltaCommits.length);
-    console.log(bidder);
     await auctionContract.methods
       .ZKPCommit(bidder.address, commits, deltaCommits)
       .send({ from: account })
@@ -161,84 +156,84 @@ async function challenge(
   }
 }
 
-export async function prove(web3, account, auctionContract, passphrase) {
-  const winner = await getWinner(auctionContract, passphrase);
-  const pedersenContract = await getPedersenContract(web3);
-
-  // get parameter stored in auction contract
-  const K = 10;
-  const Q = await auctionContract.methods.Q().call();
-  const maxBid = await auctionContract.methods.V().call();
+async function getBidders(
+  K,
+  Q,
+  maxBid,
+  rsaKey,
+  pedersenContract,
+  auctionContract,
+  winner
+) {
   const biddersAddresses = await auctionContract.methods
     .BiddersAddresses()
     .call();
-  const rsaKey = Cryptico.generateRSAKey(passphrase, 1024);
-
-  // iterate for each bidder
-  biddersAddresses.map(async bidderAddress => {
-    async function proveBidder() {
+  const bidders = [];
+  await Promise.all(
+    biddersAddresses.map(async bidderAddress => {
+      const bidder = await auctionContract.methods
+        .bidders(bidderAddress)
+        .call();
+      const decrypted = decrypt(bidder.cipher, rsaKey);
+      decrypted.address = bidderAddress;
       if (bidderAddress != winner.address) {
-        const challengesPromise = await generateChallenges(
+        const challenges = await generateChallenges(
           K,
           Q,
           maxBid,
           pedersenContract
         );
-        // const challenges = await Promise.All(challengesPromise);
-
-        console.log("challenges", challenges);
-        const deltaChallengesPromise = await generateChallenges(
+        decrypted.challenges = challenges;
+        const deltaChallenges = await generateChallenges(
           K,
           Q,
           maxBid,
           pedersenContract
         );
-        // const deltaChallenges = await Promise.All(deltaChallengesPromise);
+        decrypted.deltaChallenges = deltaChallenges;
+        bidders.push(decrypted);
+      }
+    })
+  );
 
-        // get bidder's bid and random
-        const bidder = await auctionContract.methods
-          .bidders(bidderAddress)
-          .call();
-        console.log("bidder out", bidder);
-        const decrypted = decrypt(bidder.cipher, rsaKey);
-        console.log("decrypted", decrypted);
-        decrypted.address = bidderAddress;
+  return bidders;
+}
+
+export async function prove(
+  web3,
+  account,
+  auctionContract,
+  pedersenContract,
+  passphrase
+) {
+  const K = 10;
+  Promise.all([
+    getWinner(auctionContract, passphrase),
+    auctionContract.methods.Q().call(),
+    auctionContract.methods.V().call(),
+    Cryptico.generateRSAKey(passphrase, 1024)
+  ]).then(async function(result) {
+    const bidders = await getBidders(
+      K,
+      result[1],
+      result[2],
+      result[3],
+      pedersenContract,
+      auctionContract,
+      result[0]
+    );
+    bidders.forEach(async bidder => {
+      if (bidder.address != result[0].address) {
         await challenge(
           account,
-          decrypted,
+          bidder,
           K,
-          Q,
-          maxBid,
-          winner,
-          auctionContract,
-          challenges,
-          deltaChallenges
+          result[1],
+          result[2],
+          result[0],
+          auctionContract
         );
       }
-    }
-    return proveBidder();
+    });
   });
-
-  // biddersAddresses.map(async bidderAddress => {
-  //   if (bidderAddress != winner.address) {
-  //     // get bidder's bid and random
-  //     const bidder = await auctionContract.methods
-  //       .bidders(bidderAddress)
-  //       .call();
-  //     const decrypted = decrypt(bidder.cipher, rsaKey);
-  //     decrypted.address = bidderAddress;
-  //     await challenge(
-  //       account,
-  //       decrypted,
-  //       K,
-  //       Q,
-  //       maxBid,
-  //       winner,
-  //       auctionContract,
-  //       pedersenContract
-  //     );
-  //   }
-  // });
-
-  console.log("proved");
 }

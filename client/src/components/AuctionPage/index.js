@@ -5,9 +5,13 @@ import CipherModal from "../CipherModal";
 import { placeBid } from "../../service/bidderService";
 import { getLoadedWeb3 } from "../../utils/getWeb3";
 import getCurrentAccount from "../../utils/getCurrentAccount";
-import { getAuctionContract } from "../../utils/getContracts";
+import {
+  getAuctionContract,
+  getPedersenContract
+} from "../../utils/getContracts";
 import debounce from "lodash/debounce";
 import { useParams } from "react-router";
+import { prove } from "../../service/auctioneerService";
 
 const useStyles = makeStyles({
   title: {
@@ -45,6 +49,7 @@ function AuctionPage() {
   const [account, setAccount] = useState("");
   const [auctionContract, setAuctionContract] = useState({});
   const [web3, setWeb3] = useState({});
+  const [pedersen, setPedersen] = useState({});
   const [cipher, setCipher] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const { address } = useParams();
@@ -59,10 +64,11 @@ function AuctionPage() {
         const auctionContract = await getAuctionContract(
           web3,
           address
-          // "0xbC312757364B233D0721629190096A315c348fC7"
         );
-        console.log(auctionContract);
         setAuctionContract(auctionContract);
+
+        const pedersen = await getPedersenContract(web3);
+        setPedersen(pedersen);
 
         const account = await getCurrentAccount(web3);
         setAccount(account);
@@ -90,11 +96,10 @@ function AuctionPage() {
     }
   };
 
-  // // used for testing if the modal will appear
-  // useEffect(() => {
-  //   setTimeout(() => setOpenModal(true), 5000);
-  //   setTimeout(() => setCipher("123l1jl 3n12l3n1l n13ln"), 2000);
-  // }, []);
+  const proveAuction = async () => {
+    prove(web3, account, auctionContract, pedersen, "abcdefgh");
+  };
+
 
   const renderCipher = () => {
     if (cipher !== "") {

@@ -23,7 +23,7 @@ contract Auction {
     uint[] deltaCommits;
     mapping(address => Bidder) public bidders;
     address[] public indexs;
-    uint mask =1;
+    uint mask = 1;
 
     //Auction Parameters
     address payable public auctioneerAddress;

@@ -154,6 +154,7 @@ function CreateAuctionPage() {
                   id="date-picker-dialog"
                   label="Bid end date"
                   format="MM/dd/yyyy"
+                  value={bidEndDate}
                   onChange={setBidEndDate}
                   KeyboardButtonProps={{
                     "aria-label": "change date"
@@ -164,6 +165,7 @@ function CreateAuctionPage() {
                   id="auction-end-time"
                   name="auction-end-time"
                   label="Bid end time"
+                  value={bidEndTime}
                   onChange={setBidEndTime}
                   KeyboardButtonProps={{
                     "aria-label": "change time"
@@ -176,6 +178,7 @@ function CreateAuctionPage() {
                   id="auction-reveal-date"
                   label="Reveal date"
                   format="MM/dd/yyyy"
+                  value={revealDate}
                   onChange={setRevealDate}
                   KeyboardButtonProps={{
                     "aria-label": "change date"
@@ -186,6 +189,7 @@ function CreateAuctionPage() {
                   id="auction-reveal-time"
                   name="auction-reveal-time"
                   label="Reveal time"
+                  value={revealTime}
                   onChange={setRevealTime}
                   KeyboardButtonProps={{
                     "aria-label": "change time"
@@ -198,6 +202,7 @@ function CreateAuctionPage() {
                   id="winner-payment-date"
                   label="Winner payment date"
                   format="MM/dd/yyyy"
+                  value={winnerPaymentDate}
                   onChange={setWinnerPaymentDate}
                   KeyboardButtonProps={{
                     "aria-label": "change date"
@@ -208,6 +213,7 @@ function CreateAuctionPage() {
                   id="winner-payment-time"
                   name="winner-payment-time"
                   label="Winner payment time"
+                  value={winnerPaymentTime}
                   onChange={setWinnerPaymentTime}
                   KeyboardButtonProps={{
                     "aria-label": "change time"

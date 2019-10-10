@@ -20,13 +20,13 @@ contract AuctionFactory {
 
     function createAuction(string memory _name, string memory _desc, uint _bidEndTime, uint _revealTime,
     uint _winnerPaymentTime, uint _maxBiddersCount, uint _fairnessFees, string memory _auctioneerRSAPublicKey,
-    uint8 k, bool _testing) public payable {
-        Auction newAuction = new Auction(_bidEndTime, _revealTime, _winnerPaymentTime, _maxBiddersCount,
-        _fairnessFees, _auctioneerRSAPublicKey, pedersen, k, _testing, msg.sender, msg.value);
-        auctionsAddresses.push(address(newAuction));
-        auctions[address(newAuction)] = AuctionData(_name, _desc, newAuction);
+    uint8 k, bool _testing) public payable returns(address) {
+      Auction newAuction = new Auction(_bidEndTime, _revealTime, _winnerPaymentTime, _maxBiddersCount,
+      _fairnessFees, _auctioneerRSAPublicKey, pedersen, k, _testing, msg.sender, msg.value);
+      auctionsAddresses.push(address(newAuction));
+      auctions[address(newAuction)] = AuctionData(_name, _desc, newAuction);
 
-        emit AuctionCreated(address(newAuction), msg.sender, auctionsAddresses.length, auctionsAddresses);
+      emit AuctionCreated(address(newAuction), msg.sender, auctionsAddresses.length, auctionsAddresses);
     }
 
     function allAuctions() public view returns (address[] memory) {

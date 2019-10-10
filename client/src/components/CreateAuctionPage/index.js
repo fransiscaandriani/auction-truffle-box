@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -12,6 +12,10 @@ import {
   KeyboardDatePicker
 } from "@material-ui/pickers";
 import debounce from "lodash/debounce";
+import { createAuction } from "../../service/auctionService";
+import getCurrentAccount from "../../utils/getCurrentAccount";
+import { getLoadedWeb3 } from "../../utils/getWeb3";
+import { getAuctionFactoryContract } from "../../utils/getContracts";
 
 const useStyles = makeStyles(theme => ({
   layout: {
@@ -54,6 +58,44 @@ function CreateAuctionPage() {
   const [maxBiddersCount, setMaxBiddersCount] = useState(0);
   const [fairnessFees, setFairnessFees] = useState(0);
   const [passphrase, setPassphrase] = useState("");
+  const [web3, setWeb3] = useState({});
+  const [auctionFactoryContract, setAuctionFactoryContract] = useState({});
+  const [account, setAccount] = useState("");
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Get network provider and web3 instance.
+        const web3 = await getLoadedWeb3();
+        setWeb3(web3);
+
+        // const getData = () =>
+        //   Promise.all([
+        //     getAuctionFactoryContract(web3),
+        //     getCurrentAccount(web3)
+        //   ]).then({
+        //     function(result) {
+        //       setAuctionFactoryContract(result[0]);
+        //       setAccount(result[1]);
+        //     }
+        //   });
+        // await getData();
+
+        const auctionFactoryContract = await getAuctionFactoryContract(web3);
+        setAuctionFactoryContract(auctionFactoryContract);
+
+        const account = await getCurrentAccount(web3);
+        setAccount(account);
+      } catch (error) {
+        // Catch any errors for any of the above operations.
+        alert(
+          `Failed to load web3, accounts, or contract. Check console for details.`
+        );
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, []);
 
   const debouncedSetAuctionTitle = useCallback(
     debounce(value => setAuctionTitle(value), 700),
@@ -109,16 +151,57 @@ function CreateAuctionPage() {
     return allGood;
   };
 
-  const handleCreateAuction = () => {
+  const validateTimeStamps = (
+    bidEndTimeTs,
+    revealTimeTs,
+    winnerPaymentTimeTs
+  ) => {
+    const alertWrongTime = () =>
+      alert(
+        "Please make sure that the bid end time, reveal time and winner payment time are in correct order "
+      );
+    let correct = true;
+    if (bidEndTimeTs >= revealTimeTs) correct = false;
+    else if (revealTimeTs >= winnerPaymentTimeTs) correct = false;
+
+    if (!correct) alertWrongTime();
+    return correct;
+  };
+
+  async function handleCreateAuction() {
+    const bidEndTimeTs = getTimestampFromDateAndTime(bidEndDate, bidEndTime);
     const revealTimeTs = getTimestampFromDateAndTime(revealDate, revealTime);
-    console.log("a", revealTimeTs);
+    const winnerPaymentTimeTs = getTimestampFromDateAndTime(
+      winnerPaymentDate,
+      winnerPaymentTime
+    );
+    console.log("a", revealTimeTs, bidEndTimeTs, winnerPaymentTimeTs);
     const allGood = validateInputs();
-    if (allGood) {
-      // call function to create auction
+    const correct = validateTimeStamps(
+      bidEndTimeTs,
+      revealTimeTs,
+      winnerPaymentTimeTs
+    );
+    const auctionData = {
+      name: auctionTitle,
+      desc: auctionDescription,
+      bidEndTime: bidEndTimeTs,
+      revealTime: revealTimeTs,
+      winnerPaymentTime: winnerPaymentTimeTs,
+      maxBiddersCount: maxBiddersCount,
+      fairnessFees: fairnessFees,
+      passphrase: passphrase,
+      testing: true
+    };
+    console.log(auctionFactoryContract.options.address);
+    if (allGood & correct) {
+      // await fetchData();
+
+      createAuction(account, web3, auctionFactoryContract, auctionData);
     } else {
       return; // do nothing
     }
-  };
+  }
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>

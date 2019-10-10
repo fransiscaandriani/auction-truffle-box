@@ -11,7 +11,7 @@ const mockAuction = {
   revealTime: 1570416400,
   winnerPaymentTime: 1570426400,
   maxBiddersCount: 20,
-  fairnessFees: 5000000000,
+  fairnessFees: 5,
   passphrase: "abcdefgh",
   testing: true
 };
@@ -39,7 +39,7 @@ export async function createAuction(
     )
     .send({
       from: account,
-      value: web3.utils.toWei(auctionData.fairnessFees.toString(), "wei")
+      value: web3.utils.toWei(auctionData.fairnessFees.toString(), "ether")
     });
 }
 

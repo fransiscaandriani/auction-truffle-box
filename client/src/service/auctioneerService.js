@@ -208,7 +208,7 @@ export async function prove(
   Promise.all([
     getWinner(auctionContract, passphrase),
     auctionContract.methods.Q().call(),
-    auctionContract.methods.V().call(),
+    auctionContract.methods.maxBid().call(),
     Cryptico.generateRSAKey(passphrase, 1024)
   ]).then(async function(result) {
     const bidders = await getBidders(

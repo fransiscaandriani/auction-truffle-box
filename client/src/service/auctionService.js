@@ -11,7 +11,7 @@ const mockAuction = {
   revealTime: 1570416400,
   winnerPaymentTime: 1570426400,
   maxBiddersCount: 20,
-  fairnessFees: 5,
+  fairnessFees: 0,
   passphrase: "abcdefgh",
   testing: true
 };
@@ -24,23 +24,32 @@ export async function createAuction(
 ) {
   const rsaKey = Cryptico.generateRSAKey(auctionData.passphrase, 1024);
   const publicKey = Cryptico.publicKeyString(rsaKey);
-  contract.methods
-    .createAuction(
-      auctionData.name,
-      auctionData.desc,
-      auctionData.bidEndTime,
-      auctionData.revealTime,
-      auctionData.winnerPaymentTime,
-      auctionData.maxBiddersCount,
-      auctionData.fairnessFees,
-      publicKey,
-      10,
-      auctionData.testing
-    )
-    .send({
-      from: account,
-      value: web3.utils.toWei(auctionData.fairnessFees.toString(), "ether")
-    });
+  let result;
+  async function sendData() {
+    await contract.methods
+      .createAuction(
+        auctionData.name,
+        auctionData.desc,
+        auctionData.bidEndTime,
+        auctionData.revealTime,
+        auctionData.winnerPaymentTime,
+        auctionData.maxBiddersCount,
+        auctionData.fairnessFees,
+        publicKey,
+        10,
+        auctionData.testing
+      )
+      .send({
+        from: account,
+        value: web3.utils.toWei(auctionData.fairnessFees.toString(), "ether")
+      })
+      .then(function(receipt) {
+        console.log(receipt);
+        result = receipt.events.AuctionCreated.returnValues.auctionContract;
+      });
+  }
+  await sendData();
+  return result;
 }
 
 export async function getAllAuctionsData(contract) {

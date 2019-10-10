@@ -14,6 +14,7 @@ import AuctionList from "./components/AuctionList";
 import AuctionPage from "./components/AuctionPage";
 import TopAppBar from "./components/TopAppBar";
 import CreateAuctionPage from "./components/CreateAuctionPage";
+import MyAuctions from "./components/MyAuctions";
 import {
   createAuction,
   getAllAuctionsData,
@@ -169,6 +170,10 @@ class App extends Component {
               <Route path="/new-auction">
                 <TopAppBar />
                 <CreateAuctionPage />
+              </Route>
+              <Route path="/my-auctions">
+                <TopAppBar />
+                <MyAuctions />
               </Route>
             </Switch>
           </div>

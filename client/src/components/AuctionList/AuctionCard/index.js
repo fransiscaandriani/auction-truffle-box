@@ -10,8 +10,10 @@ import { Link } from "react-router-dom";
 const useStyles = makeStyles({
   card: {
     width: 400,
+    height: 200,
     display: "inline-block",
-    margin: 20
+    margin: 20,
+    position: "relative"
   },
   bullet: {
     display: "inline-block",
@@ -28,7 +30,11 @@ const useStyles = makeStyles({
     textDecoration: "none"
   },
   action: {
-    float: "right"
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    margin: 10
+    // float: "right"
   }
 });
 
@@ -38,10 +44,15 @@ function AuctionCard(props) {
   return (
     <Card className={classes.card}>
       <CardContent>
-        <Typography variant="h5" component="h2">
+        <Typography variant="h5" component="h2" noWrap={true}>
           {props.name}
         </Typography>
-        <Typography variant="body2" component="p" color="textSecondary">
+        <Typography
+          variant="body2"
+          component="p"
+          color="textSecondary"
+          noWrap={true}
+        >
           {props.desc}
         </Typography>
       </CardContent>

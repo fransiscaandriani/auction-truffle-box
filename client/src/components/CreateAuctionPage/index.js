@@ -196,8 +196,13 @@ function CreateAuctionPage() {
     console.log(auctionFactoryContract.options.address);
     if (allGood & correct) {
       // await fetchData();
-
-      createAuction(account, web3, auctionFactoryContract, auctionData);
+      const address = await createAuction(
+        account,
+        web3,
+        auctionFactoryContract,
+        auctionData
+      );
+      if (address !== null) console.log(address);
     } else {
       return; // do nothing
     }

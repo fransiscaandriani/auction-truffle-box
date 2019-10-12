@@ -61,10 +61,7 @@ function AuctionPage() {
         const web3 = await getLoadedWeb3();
         setWeb3(web3);
 
-        const auctionContract = await getAuctionContract(
-          web3,
-          address
-        );
+        const auctionContract = await getAuctionContract(web3, address);
         setAuctionContract(auctionContract);
 
         const pedersen = await getPedersenContract(web3);
@@ -89,7 +86,12 @@ function AuctionPage() {
   );
 
   const placeNewBid = async () => {
-    const cipher = await placeBid(account, web3, auctionContract, bid);
+    const cipher = await placeBid(
+      account,
+      web3,
+      auctionContract,
+      parseInt(bid)
+    );
     if (cipher !== null) {
       setCipher(cipher);
       setOpenModal(true);
@@ -99,7 +101,6 @@ function AuctionPage() {
   const proveAuction = async () => {
     prove(web3, account, auctionContract, pedersen, "abcdefgh");
   };
-
 
   const renderCipher = () => {
     if (cipher !== "") {
@@ -140,6 +141,9 @@ function AuctionPage() {
           <Button variant="contained" color="primary" onClick={placeNewBid}>
             Submit Bid
           </Button>
+          {/* <Button variant="contained" color="primary" onClick={proveAuction}>
+            Prove
+          </Button> */}
         </div>
       </div>
       <Typography variant="body1" className={classes.description}>

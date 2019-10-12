@@ -4,16 +4,17 @@ import Cryptico from "cryptico-js";
 export async function getWinner(auctionContract, passphrase) {
   const rsaKey = Cryptico.generateRSAKey(passphrase, 1024);
   const indexs = await auctionContract.methods.BiddersAddresses().call();
-  console.log(indexs);
   const winner = { bid: 0 };
   await Promise.all(
     indexs.map(async index => {
       const bidder = await auctionContract.methods.bidders(index).call();
-      const decrypted = decrypt(bidder.cipher, rsaKey);
-      if (decrypted.bid > winner.bid) {
-        winner.address = index;
-        winner.bid = decrypted.bid;
-        winner.random = decrypted.random;
+      if (bidder.cipher !== "" && bidder.cipher !== null) {
+        const decrypted = decrypt(bidder.cipher, rsaKey);
+        if (decrypted.bid > winner.bid) {
+          winner.address = index;
+          winner.bid = decrypted.bid;
+          winner.random = decrypted.random;
+        }
       }
     })
   );
@@ -32,7 +33,6 @@ function decrypt(cipher, rsaKey) {
 }
 
 export async function claimWinner(auctionContract, winner, account) {
-  console.log(winner.address);
   await auctionContract.methods
     .ClaimWinner(winner.address, winner.bid, winner.random)
     .send({ from: account });
@@ -45,11 +45,10 @@ async function generateChallenges(K, Q, maxBid, pedersenContract) {
   const makeChallenges = () =>
     Promise.all(
       iterator.map(async i => {
-        console.log("inside");
-        const w1 = BigInt(Math.floor(Math.random() * 10 ** 80));
-        const w2 = BigInt(Q) - (BigInt(w1) - BigInt(maxBid));
-        const r1 = BigInt(Math.floor(Math.random() * 10 ** 80));
-        const r2 = BigInt(Math.floor(Math.random() * 10 ** 80));
+        const w1 = BigInt(Math.floor(Math.random() * 10 ** 20));
+        const w2 = BigInt(Q) - (w1 - BigInt(maxBid));
+        const r1 = BigInt(Math.floor(Math.random() * 10 ** 20));
+        const r2 = BigInt(Math.floor(Math.random() * 10 ** 20));
         const cW1 = await pedersenContract.methods
           .Commit(w1.toString(), r1.toString())
           .call();
@@ -58,7 +57,12 @@ async function generateChallenges(K, Q, maxBid, pedersenContract) {
           .call();
 
         Array.prototype.push.apply(commits, [cW1.cX, cW1.cY, cW2.cX, cW2.cY]);
-        Array.prototype.push.apply(opens, [w1, r1, w2, r2]);
+        Array.prototype.push.apply(opens, [
+          w1.toString(),
+          r1.toString(),
+          w2.toString(),
+          r2.toString()
+        ]);
       })
     );
   await makeChallenges();
@@ -83,67 +87,81 @@ async function challenge(
   const deltaOpens = bidder.deltaChallenges.opens;
 
   try {
-    let blockHash = "00";
+    let blockHash;
     await auctionContract.methods
       .ZKPCommit(bidder.address, commits, deltaCommits)
       .send({ from: account })
       .then(function(receipt) {
         // get block hash
-        blockHash = blockHash + receipt.blockHash.substring(2);
+        blockHash = receipt.blockHash;
       });
     //turn hexadecimal to decimal
-    const challenge = blockHash.toString(16);
+    const challenge = BigInt(blockHash);
 
-    let mask = 1;
+    let mask = BigInt(1);
     const responses = [];
     //pushing responses
     for (let i = 0, j = 0; i < K; i++, j += 4) {
-      if ((challenge & mask) === 0) {
-        Array.prototype.apply(responses, [
+      if ((challenge & mask) === BigInt(0)) {
+        Array.prototype.push.apply(responses, [
           opens[j],
           opens[j + 1],
           opens[j + 2],
           opens[j + 3]
         ]);
       } else {
-        let m = opens[j] + bidder.bid;
-        let n = opens[j + 1] + bidder.random;
+        let m = BigInt(opens[j]) + BigInt(bidder.bid.toString());
+        let n = BigInt(opens[j + 1]) + BigInt(bidder.random.toString());
         let z = 1;
         if (m > maxBid || m <= 0) {
           z = 2;
-          m = opens[j + 2] + bidder.bid;
-          n = opens[j + 3] + bidder.random;
+          m = BigInt(opens[j + 2]) + BigInt(bidder.bid.toString());
+          n = BigInt(opens[j + 3]) + BigInt(bidder.random.toString());
         }
-        Array.prototype.apply(responses, [m, n, z]);
+        Array.prototype.push.apply(responses, [
+          m.toString(),
+          n.toString(),
+          z.toString()
+        ]);
       }
-      mask = mask << 1;
+      mask = mask << BigInt(1);
     }
 
     const deltaResponses = [];
     //pushing deltaResponses
     for (let i = 0, j = 0; i < K; i++, j += 4) {
-      if ((challenge & mask) === 0) {
-        Array.prototype.apply(deltaResponses, [
+      if ((challenge & mask) === BigInt(0)) {
+        Array.prototype.push.apply(deltaResponses, [
           deltaOpens[j],
           deltaOpens[j + 1],
           deltaOpens[j + 2],
           deltaOpens[j + 3]
         ]);
       } else {
-        let diff = winner.bid - bidder.bid;
-        if (diff < 0) diff += Q;
-        let m = deltaOpens[j] + diff;
-        let n = deltaOpens[j + 1] + winner.random - bidder.random;
+        let diff = BigInt(winner.bid) - BigInt(bidder.bid);
+        if (diff < 0) diff += BigInt(Q);
+        let m = BigInt(deltaOpens[j]) + BigInt(diff);
+        let n =
+          BigInt(deltaOpens[j + 1]) +
+          BigInt(winner.random.toString()) -
+          BigInt(bidder.random.toString());
         let z = 1;
         if (m > maxBid || m < 0) {
           z = 2;
-          m = deltaOpens[j + 2] + diff; // bidders[winnerIndex].Bid - x.Bid;
-          n = deltaOpens[j + 3] + winner.random - bidder.random;
+          m = BigInt(deltaOpens[j + 2]) + diff; // bidders[winnerIndex].Bid - x.Bid;
+          n =
+            BigInt(deltaOpens[j + 3]) +
+            BigInt(winner.random.toString()) -
+            BigInt(bidder.random.toString());
         }
-        if (n < 0) n += Q;
-        Array.prototype.apply(deltaResponses, [m, n, z]);
+        if (n < 0) n += BigInt(Q);
+        Array.prototype.push.apply(deltaResponses, [
+          m.toString(),
+          n.toString(),
+          z.toString()
+        ]);
       }
-      mask = mask << 1;
+      mask = mask << BigInt(1);
     }
 
     await auctionContract.methods
@@ -207,27 +225,25 @@ export async function prove(
   const K = 10;
   Promise.all([
     getWinner(auctionContract, passphrase),
-    auctionContract.methods.Q().call(),
-    auctionContract.methods.maxBid().call(),
     Cryptico.generateRSAKey(passphrase, 1024)
   ]).then(async function(result) {
     const bidders = await getBidders(
       K,
+      "21888242871839275222246405745257275088696311157297823662689037894645226208583",
+      "5472060717959818805561601436314318772174077789324455915672259473661306552145",
       result[1],
-      result[2],
-      result[3],
       pedersenContract,
       auctionContract,
       result[0]
     );
-    bidders.forEach(async bidder => {
+    bidders.forEach(bidder => {
       if (bidder.address !== result[0].address) {
-        await challenge(
+        challenge(
           account,
           bidder,
           K,
-          result[1],
-          result[2],
+          "21888242871839275222246405745257275088696311157297823662689037894645226208583",
+          "5472060717959818805561601436314318772174077789324455915672259473661306552145",
           result[0],
           auctionContract
         );

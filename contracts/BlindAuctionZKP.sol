@@ -129,15 +129,15 @@ contract Auction {
         while(i<response.length && j<commits.length) {
             if(hash&mask == 0) {
                 require((response[i] + response[i+2])%Q==maxBid, "Wrong response");
-                require(pedersen.Verify(response[i], response[i+1], commits[j], commits[j+1]), "Not verified");
-                require(pedersen.Verify(response[i+2], response[i+3], commits[j+2], commits[j+3]), "Not verified");
+                require(pedersen.Verify(response[i], response[i+1], commits[j], commits[j+1]), "Not verified 1");
+                require(pedersen.Verify(response[i+2], response[i+3], commits[j+2], commits[j+3]), "Not verified 2");
                 i += 4;
             } else {
                 if(response[i+2] == 1) //z=1
                     (cX, cY) = pedersen.ecAdd(bidders[challengedBidder].commitX, bidders[challengedBidder].commitY, commits[j], commits[j+1]);
                 else
                     (cX, cY) = pedersen.ecAdd(bidders[challengedBidder].commitX, bidders[challengedBidder].commitY, commits[j+2], commits[j+3]);
-                require(pedersen.Verify(response[i], response[i+1], cX, cY), "Not verified");
+                require(pedersen.Verify(response[i], response[i+1], cX, cY), "Not verified 3");
                 i += 3;
             }
             j += 4;
@@ -151,8 +151,8 @@ contract Auction {
         while(i<deltaResponses.length && j<deltaCommits.length) {
             if(hash&mask == 0) {
                 require((deltaResponses[i] + deltaResponses[i+2])%Q==maxBid, "wrong deltaResponse");
-                require(pedersen.Verify(deltaResponses[i], deltaResponses[i+1], deltaCommits[j], deltaCommits[j+1]), "delta not verified");
-                require(pedersen.Verify(deltaResponses[i+2], deltaResponses[i+3], deltaCommits[j+2], deltaCommits[j+3]), "delta not verified");
+                require(pedersen.Verify(deltaResponses[i], deltaResponses[i+1], deltaCommits[j], deltaCommits[j+1]), "delta not verified 1");
+                require(pedersen.Verify(deltaResponses[i+2], deltaResponses[i+3], deltaCommits[j+2], deltaCommits[j+3]), "delta not verified 2");
                 i += 4;
             } else {
             (cX, cY) = pedersen.CommitDelta(bidders[winner].commitX, bidders[winner].commitY, bidders[challengedBidder].commitX, bidders[challengedBidder].commitY);
@@ -160,7 +160,7 @@ contract Auction {
                 (cX, cY) = pedersen.ecAdd(cX,cY, deltaCommits[j], deltaCommits[j+1]);
             else
                 (cX, cY) = pedersen.ecAdd(cX,cY, deltaCommits[j+2], deltaCommits[j+3]);
-            require(pedersen.Verify(deltaResponses[i],deltaResponses[i+1],cX,cY), "delta not verified");
+            require(pedersen.Verify(deltaResponses[i],deltaResponses[i+1],cX,cY), "delta not verified 3");
             i += 3;
             }
             j += 4;

@@ -169,6 +169,7 @@ async function challenge(
       .send({ from: account });
   } catch (error) {
     console.log(error);
+    alert(`Proof unsuccessful`);
   }
 }
 
@@ -250,4 +251,13 @@ export async function prove(
       }
     });
   });
+}
+
+export async function verifyAll(auctionContract, account) {
+  try {
+    await auctionContract.methods.VerifyAll().send({ from: account });
+  } catch (error) {
+    console.log(error);
+    alert(`Verification unsuccessful`);
+  }
 }

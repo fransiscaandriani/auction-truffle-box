@@ -11,7 +11,7 @@ const mockAuction = {
   revealTime: 1570416400,
   winnerPaymentTime: 1570426400,
   maxBiddersCount: 20,
-  fairnessFees: 0,
+  fairnessFees: 1,
   passphrase: "abcdefgh",
   testing: true
 };
@@ -57,23 +57,28 @@ export async function createAuction(
   }
 }
 
-export async function getAllAuctionsData(contract) {
+export async function getAllAuctionsData(contract, addresses = null) {
   const auctionsData = [];
-  const auctionsAddresses = await contract.methods.allAuctions().call();
-  await Promise.all(
-    auctionsAddresses.map(async address => {
-      const temp = await contract.methods.getAuctionData(address).call();
-      const data = { address: address, name: temp[0], desc: temp[1] };
-      auctionsData.push(data);
-    })
-  );
-  // auctionsAddresses.forEach(async function(address) {
-  //   const temp = await contract.methods.getAuctionData(address).call();
-  //   const data = { address: address, name: temp[0], desc: temp[1] };
-  //   auctionsData.push(data);
-  // });
-
-  return auctionsData;
+  if (addresses === null) {
+    const auctionsAddresses = await contract.methods.allAuctions().call();
+    await Promise.all(
+      auctionsAddresses.map(async address => {
+        const temp = await contract.methods.getAuctionData(address).call();
+        const data = { address: address, name: temp[0], desc: temp[1] };
+        auctionsData.push(data);
+      })
+    );
+    return auctionsData;
+  } else {
+    await Promise.all(
+      addresses.map(async address => {
+        const temp = await contract.methods.getAuctionData(address).call();
+        const data = { address: address, name: temp[0], desc: temp[1] };
+        auctionsData.push(data);
+      })
+    );
+    return auctionsData;
+  }
 }
 
 export async function getAuctionData(web3, auctionAddress, account) {

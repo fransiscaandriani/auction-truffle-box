@@ -39,13 +39,17 @@ export async function getMyBids(web3, account) {
   const auctionAddresses = await auctionFactoryContract.methods
     .allAuctions()
     .call();
-  auctionAddresses.forEach(async address => {
-    const auctionContract = await getAuctionContract(web3, address);
-    const bidderData = await auctionContract.methods.BidderData(account).call();
-    if (bidderData[0]) {
-      bids.push(address);
-    }
-  });
+  await Promise.all(
+    auctionAddresses.map(async address => {
+      const auctionContract = await getAuctionContract(web3, address);
+      const bidderData = await auctionContract.methods
+        .BidderData(account)
+        .call();
+      if (bidderData[0]) {
+        bids.push(address);
+      }
+    })
+  );
   return bids;
 }
 

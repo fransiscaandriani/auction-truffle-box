@@ -4,6 +4,7 @@ import {
   getAuctionContract
 } from "../utils/getContracts";
 import Cryptico from "cryptico-js";
+import { getWinner } from "./auctioneerService";
 
 // Input bid in eth
 export async function placeBid(account, web3, auctionContract, bid) {
@@ -50,9 +51,31 @@ export async function getMyBids(web3, account) {
 
 export async function revealBid(auctionContract, account, cipher) {
   try {
-    auctionContract.methods.Reveal(cipher).send({ from: account });
+    await auctionContract.methods.Reveal(cipher).send({ from: account });
   } catch (e) {
     alert(`Reveal bid unsuccessful`);
     console.log(e);
+  }
+}
+
+export async function refund(auctionContract, account) {
+  try {
+    await auctionContract.methods.Withdraw().send({ from: account });
+  } catch (error) {
+    console.log(error);
+    alert(`Refund unsuccessful`);
+  }
+}
+
+export async function winnerPay(web3, auctionContract, account) {
+  try {
+    const bid = await auctionContract.methods.highestBid().call();
+    console.log(bid);
+    await auctionContract.methods
+      .WinnerPay()
+      .send({ from: account, value: web3.utils.toWei(bid) });
+  } catch (error) {
+    console.log(error);
+    alert(`Winner payment unsuccessful`);
   }
 }

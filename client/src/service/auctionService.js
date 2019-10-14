@@ -83,6 +83,14 @@ export async function getAllAuctionsData(contract, addresses = null) {
 
 export async function getAuctionData(web3, auctionAddress, account) {
   var auctionData = {};
+  const auctionStates = [
+    "Init",
+    "Challenge",
+    "ChallengeDelta",
+    "Verify",
+    "VerifyDelta",
+    "ValidWinner"
+  ];
   const auctionFactoryContract = await getAuctionFactoryContract(web3);
   const contract = await getAuctionContract(web3, auctionAddress);
 
@@ -93,19 +101,28 @@ export async function getAuctionData(web3, auctionAddress, account) {
   auctionData.name = nameDescList[0];
   auctionData.desc = nameDescList[1];
 
-  // Auction related cariables
+  // Auction related variables
   const auctionVars = await contract.methods.AuctionData().call();
   auctionData.bidEndTime = auctionVars[0];
   auctionData.revealTime = auctionVars[1];
   auctionData.winnerPaymentTime = auctionVars[2];
   auctionData.fairnessFees = auctionVars[3];
+  auctionData.state = auctionStates[auctionVars[4]];
 
-  // Bidder related data
-  const bidderVars = await contract.methods.BidderData(account).call();
-  auctionData.hasbid = bidderVars[0];
-  auctionData.bidderExceeds = bidderVars[1];
-  auctionData.paidBack = bidderVars[2];
-  auctionData.isWinner = bidderVars[3];
+  // Auctioneer address
+  const auctioneerAddress = await contract.methods.auctioneerAddress().call();
 
-  return auctionData;
+  if (account === auctioneerAddress) {
+    auctionData.isAuctioneer = true;
+    return auctionData;
+  } else {
+    // Bidder related data
+    auctionData.isAuctioneer = false;
+    const bidderVars = await contract.methods.BidderData(account).call();
+    auctionData.hasbid = bidderVars[0];
+    auctionData.bidderExceeds = bidderVars[1];
+    auctionData.paidBack = bidderVars[2];
+    auctionData.isWinner = bidderVars[3];
+    return auctionData;
+  }
 }

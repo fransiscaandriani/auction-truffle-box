@@ -1,5 +1,8 @@
 import Cryptico from "cryptico-js";
-import {getAuctionFactoryContract, getAuctionContract} from "../utils/getContracts"
+import {
+  getAuctionFactoryContract,
+  getAuctionContract
+} from "../utils/getContracts";
 /* global BigInt */
 
 export async function getWinner(auctionContract, passphrase) {
@@ -265,7 +268,7 @@ export async function verifyAll(auctionContract, account) {
 
 export async function getMyAuctions(web3, account) {
   const auctionFactoryContract = await getAuctionFactoryContract(web3);
-  var bids = [];
+  var auctions = [];
   const auctionAddresses = await auctionFactoryContract.methods
     .allAuctions()
     .call();
@@ -275,10 +278,10 @@ export async function getMyAuctions(web3, account) {
       const auctioneerAddress = await auctionContract.methods
         .auctioneerAddress()
         .call();
-      if (auctioneerAddress === account ) {
-        bids.push(address);
+      if (auctioneerAddress === account) {
+        auctions.push(address);
       }
     })
   );
-  return bids;
+  return auctions;
 }

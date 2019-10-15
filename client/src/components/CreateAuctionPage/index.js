@@ -124,15 +124,17 @@ function CreateAuctionPage() {
 
   // this function is to get the ts you use for the contract backend
   const getTimestampFromDateAndTime = (date, time) => {
-    return new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      time.getHours(),
-      time.getMinutes(),
-      time.getSeconds(),
-      0
-    ).getTime();
+    return Math.floor(
+      new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        time.getHours(),
+        time.getMinutes(),
+        time.getSeconds(),
+        0
+      ).getTime() / 1000
+    );
   };
 
   const validateInputs = () => {

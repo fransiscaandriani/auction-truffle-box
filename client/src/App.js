@@ -20,13 +20,19 @@ import {
   getAllAuctionsData,
   getAuctionData
 } from "./service/auctionService";
-import { getMyBids, revealBid } from "./service/bidderService";
+import {
+  getMyBids,
+  revealBid,
+  refund,
+  winnerPay
+} from "./service/bidderService";
 import "./App.css";
 import {
   getWinner,
   claimWinner,
   prove,
-  generateChallenges
+  generateChallenges,
+  verifyAll
 } from "./service/auctioneerService.js";
 class App extends Component {
   state = { storageValue: 0, web3: null, account: null, contract: null };
@@ -59,30 +65,26 @@ class App extends Component {
   runExample = async () => {
     const { account, web3, contract } = this.state;
 
-    // const auctionData = getAllAuctionsData(web3, contract);
-    // console.log(auctionData)
-
-    // const auctionData = await getAuctionData(
-    //   web3,
-    //   "0x3AA2CAf24E9C118fD9fe8bBE7648D8460A7CF49E",
-    //   account
-    // );
+    // const auctionData = await getAllAuctionsData(contract, [
+    //   "0x3156bd1b8d109a42191a45d2c4e3f954e0ab3580"
+    // ]);
+    // console.log(auctionData);
 
     // console.log(auctionData);
     // await contract.methods
-    //   .placeBid(account, "0x3AA2CAf24E9C118fD9fe8bBE7648D8460A7CF49E")
+    //   .placeBid(account, "x1155aB8e49E82e1284d88588F8ea813f016bF95f")
     //   .send({ from: account });
 
     // const auctionAddresses = await contract.methods.allAuctions().call();
     // console.log(auctionAddresses);
     // const mybids = await getMyBids(web3, account);
-    // console.log(mybids);
+    // console.log(mybids.length);
 
-    // createAuction(account, web3, contract);
-
+    // const address = await createAuction(account, web3, contract);
+    // console.log(address);
     // (async () => {
-    //   const pedersen = await getPedersenContract(web3);
-    //   console.log("pedersen", pedersen);
+    const pedersen = await getPedersenContract(web3);
+    console.log("pedersen", pedersen);
 
     //   const challenges = await generateChallenges(
     //     10,
@@ -96,22 +98,60 @@ class App extends Component {
 
     const auction = await getAuctionContract(
       web3,
-      "0x3AA2CAf24E9C118fD9fe8bBE7648D8460A7CF49E"
+      "0x3156BD1b8D109A42191a45D2C4E3f954E0aB3580"
     );
 
-    // const commit = await pedersen.methods
-    //   .Commit(10000000000000, 22030291809)
+    const auctionData = await getAuctionData(
+      web3,
+      "0x3156BD1b8D109A42191a45D2C4E3f954E0aB3580",
+      account
+    );
+    console.log(auctionData);
+    // await winnerPay(web3, auction, account);
+    // await verifyAll(auction, account);
+    // const commitWinner = await pedersen.methods.Commit(10, 162039573).call();
+    // console.log(commitWinner);
+    // console.log(commitWinner.cX, commitWinner.cY);
+
+    // const commitChallenged = await pedersen.methods.Commit(4, 162039573).call();
+    // console.log(commitChallenged.cX, commitChallenged.cY);
+    // const commitDelta = await pedersen.methods
+    //   .CommitDelta(
+    //     commitWinner.cX,
+    //     commitWinner.cY,
+    //     commitChallenged.cX,
+    //     commitChallenged.cY
+    //   )
     //   .call();
-    // console.log(commit);
+    // console.log(commitDelta.cX, commitDelta.cY);
+
+    // const commitResult = await pedersen.methods
+    //   .ecAdd(
+    //     commitDelta.cX,
+    //     commitDelta.cY,
+    //     "11582721786250466536461455673042417570779959094161799545099454013177462646649",
+    //     "4376788553144475931241665342625658969219286226788971703303863113738637119360"
+    //   )
+    //   .call();
+    // console.log(commitResult);
+    // const correct = await pedersen.methods
+    //   .Verify("49918876", "8869815", commitResult.cX3, commitResult.cY3)
+    //   .call();
+    // console.log(correct);
 
     const winner = await getWinner(auction, "abcdefgh");
     console.log(winner);
 
+    // const states = await auction.methods.states().call();
+    // console.log(states);
+
+    // const bidder = await auction.methods.bidders(account).call();
+    // console.log(bidder);
     // claimWinner(auction, winner, account);
-    // const winner = await auction.methods.winner().call();
-    // console.log("winner: ", winner);
+    const auctionWinner = await auction.methods.winner().call();
+    console.log("winner: ", auctionWinner);
     // const cipher =
-    // "Xlr2A2hPnnkuRR7IewpmCSf549/rmF5Px23KBn6eChvFURgZ5bp8toPPUNzVzjkCyRUiFR6nuCCj57talhBgHox7kOlVkbP8DkVDTFzDCoTEd8UYyJ4sj5ejixZKEfG/KKbyRyvdQGZ6lo/pikqUXM3J5a71mL7p/za0EdFffGQ=?QC2jjOJ+m5MFsHf9ZbYKm3PU4kWEYBEyQZZ+x5oz7aA6YCc/wn+ix9RP0qdY2mC2";
+    //   "aMf+5EM9jxSl6x+iafaGmJyrQzqXZvzdO64VDCF6lssb2nXcfK4aUboEdoJHhEJnGsYYF1eMww/uPO8yGk/h+OcqGigEFrb4NhZzzuHT3m9yaIQzVOKQgnIebljsKwQXebRQiaOR+PdrhttGXO5HSH6/HB3qtvM2QTx65ByXsxM=?uiZ1nD1GMlXVPclSeGke2KSkzTy0fHTWv1jWzyV5qjRoPfE7vkUJsOf9EbEFwDor";
     // revealBid(auction, account, cipher);
     // const bidderData = await auction.methods.BidderData(account).call();
     // console.log(bidderData);

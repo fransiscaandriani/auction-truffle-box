@@ -2,7 +2,12 @@ import React, { useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container, Typography, Button, TextField } from "@material-ui/core";
 import CipherModal from "../CipherModal";
-import { placeBid, winnerPay, refund } from "../../service/bidderService";
+import {
+  placeBid,
+  winnerPay,
+  refund,
+  revealBid
+} from "../../service/bidderService";
 import { getLoadedWeb3 } from "../../utils/getWeb3";
 import getCurrentAccount from "../../utils/getCurrentAccount";
 import {
@@ -39,13 +44,27 @@ const useStyles = makeStyles({
   "button-container": {
     display: "flex",
     flexDirection: "column",
-    height: 50
+    height: 50,
+    margin: 20,
+    minWidth: 500
   },
   input: {
     margin: 10
   },
   end: {
     margin: 20
+  },
+  buttonBox: {
+    display: "flex",
+    flexDirection: "column",
+    width: 300
+  },
+  textArea: {
+    height: 150,
+    marginBottom: 10
+  },
+  lowerButton: {
+    marginTop: 8
   }
 });
 
@@ -110,10 +129,6 @@ function AuctionPage() {
     }
   };
 
-  const proveAuction = async () => {
-    prove(web3, account, auctionContract, pedersen, "abcdefgh");
-  };
-
   const renderCipher = () => {
     if (cipher !== "") {
       return <CipherModal open={openModal} cipherText={cipher} />;
@@ -121,7 +136,7 @@ function AuctionPage() {
   };
 
   // const currentTime = Math.floor(Date.now() / 1000);
-  const currentTime = 1570416450;
+  const currentTime = 1571294812;
 
   /**
    * 1. determine winner button
@@ -135,20 +150,39 @@ function AuctionPage() {
    * 9. refund
    */
 
-  const renderNotice = message => {
-    return <Typography variant="h6">{message}</Typography>;
+  const renderNotice = (message, date = 0) => {
+    if (date === 0) {
+      return <Typography variant="h5">{message}</Typography>;
+    } else {
+      return (
+        <div>
+          <Typography variant="h5">{message}</Typography>
+          {renderDateTime(date)}
+        </div>
+      );
+    }
   };
 
-  const renderPassphraseBox = label => {
+  const renderDateTime = unixTime => {
+    const dateTime = new Date(unixTime * 1000);
+    console.log(dateTime.toLocaleTimeString());
+    return (
+      <Typography variant="h6" color="textSecondary">
+        {dateTime.toDateString() + " " + dateTime.toLocaleTimeString()}
+      </Typography>
+    );
+  };
+
+  const renderPassphraseBox = () => {
     return (
       <TextField
         required
         id="passphrase"
-        name="passphrase"
-        label={label}
+        label="Passphrase"
         type="password"
+        variant="outlined"
+        margin="normal"
         onChange={e => setPassphrase(e.target.value)}
-        fullWidth
       />
     );
   };
@@ -160,25 +194,37 @@ function AuctionPage() {
     };
 
     return (
-      <div>
+      <div className={classes.buttonBox}>
+        {renderNotice("Determining winner to be started...")}
         {renderPassphraseBox()}
-        <Button onClick={determineWinner}> Determine Winner </Button>
+        <Button variant="contained" color="primary" onClick={determineWinner}>
+          {" "}
+          Determine Winner{" "}
+        </Button>
       </div>
     );
   };
 
   const renderProveButtonWithPassphrase = () => {
     return (
-      <div>
+      <div className={classes.buttonBox}>
+        {renderNotice("Proving in progress...")}
         {renderPassphraseBox()}
         <Button
+          variant="contained"
+          color="primary"
           onClick={() =>
             prove(web3, account, auctionContract, pedersen, passphrase)
           }
         >
           Prove
         </Button>
-        <Button onClick={() => verifyAll(auctionContract, account)}>
+        <Button
+          className={classes.lowerButton}
+          variant="contained"
+          color="primary"
+          onClick={() => verifyAll(auctionContract, account)}
+        >
           Verify All
         </Button>
       </div>
@@ -200,12 +246,17 @@ function AuctionPage() {
       // display prove button and passphrase box beside each other
       // display verify all button
       return renderProveButtonWithPassphrase();
+    } else {
+      return renderNotice(
+        "It's time for winner to pay and other bidders to refund"
+      );
     }
   };
 
   const renderBidButtonAndInputBox = () => {
     return (
-      <div>
+      <div className={classes.buttonBox}>
+        {renderNotice("Bidding will be closed at", auctionData.bidEndTime)}
         <TextField
           id="outlined-number"
           label="Your bid"
@@ -232,38 +283,63 @@ function AuctionPage() {
 
   const renderRevealButtonWithInput = () => {
     return (
-      <div>
-        <label for="cipher">Cipher</label>
-        <textarea
-          id="cipher"
+      <div className={classes.buttonBox}>
+        {renderNotice("Reveal will be closed on", auctionData.revealTime)}
+        <TextField
+          required
+          className={classes.textArea}
+          label="Cipher"
+          margin="normal"
           value={cipherReveal}
-          onChange={e => setCipherReveal(e.target.event)}
-        ></textarea>
-        <Button variant="contained" color="primary" onClick={placeNewBid}>
-          Submit Bid
+          onChange={e => setCipherReveal(e.target.value)}
+          multiline={true}
+          rows={7}
+          variant="outlined"
+        ></TextField>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={revealBidWithCipher}
+        >
+          Reveal Bid
+        </Button>
+      </div>
+    );
+  };
+  const revealBidWithCipher = () => {
+    console.log(cipherReveal);
+    revealBid(auctionContract, account, cipherReveal);
+  };
+  const renderPayButton = () => {
+    console.log("pay button");
+    return (
+      <div className={classes.buttonBox}>
+        {renderNotice("Congratulation! You win the auction.")}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => winnerPay(web3, auctionContract, account)}
+        >
+          Pay
         </Button>
       </div>
     );
   };
 
-  const renderPayButton = () => {
-    console.log("pay button");
-    return (
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => winnerPay(web3, auctionContract, account)}
-      >
-        Pay
-      </Button>
-    );
-  };
-
   const renderClaimButton = () => {
     return (
-      <Button onClick={() => refund(auctionContract, account)}>
-        Claim Refund
-      </Button>
+      <div className={classes.buttonBox}>
+        {renderNotice(
+          "You do not win the auction. Please refund the fee you paid to enter the auction."
+        )}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => refund(auctionContract, account)}
+        >
+          Claim Refund
+        </Button>
+      </div>
     );
   };
 
@@ -313,6 +389,8 @@ function AuctionPage() {
         console.log(6);
         // display claim button
         return renderClaimButton();
+      } else {
+        return renderNotice("Auction has ended");
       }
     }
   };
@@ -335,9 +413,7 @@ function AuctionPage() {
           alt="auction-item"
         />
         <div className={classes["button-container"]}>
-          <Typography className={classes.end} variant="h5">
-            Auction closes at 22 October 2019 09:00
-          </Typography>
+          {/* {renderDateTime(1570416450)} */}
           {renderCipher()}
           {renderButton()}
         </div>

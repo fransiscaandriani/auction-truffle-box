@@ -119,7 +119,7 @@ export async function getAuctionData(web3, auctionAddress, account) {
     // Bidder related data
     auctionData.isAuctioneer = false;
     const bidderVars = await contract.methods.BidderData(account).call();
-    auctionData.hasbid = bidderVars[0];
+    auctionData.hasBid = bidderVars[0];
     auctionData.bidderExceeds = bidderVars[1];
     auctionData.paidBack = bidderVars[2];
     auctionData.isWinner = bidderVars[3];

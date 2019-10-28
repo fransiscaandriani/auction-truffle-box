@@ -57,7 +57,7 @@ function AuctionCard(props) {
         </Typography>
       </CardContent>
       <CardActions className={classes.action}>
-        <Link to="/auction" className={classes.link}>
+        <Link to={"/auction/" + props.address} className={classes.link}>
           <Button size="small">View Auction</Button>
         </Link>
       </CardActions>

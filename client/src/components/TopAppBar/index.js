@@ -37,7 +37,7 @@ export default function ButtonAppBar() {
             <Typography variant="h6">Blind Auction</Typography>
           </Link>
           <Link to="/my-auctions" className={classes.link}>
-            <Button className={classes.button}>My Bids</Button>
+            <Button className={classes.button}>My Profile</Button>
           </Link>
         </Toolbar>
       </AppBar>

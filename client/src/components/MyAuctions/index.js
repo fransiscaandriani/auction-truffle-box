@@ -9,6 +9,7 @@ import Divider from "@material-ui/core/Divider";
 import InboxIcon from "@material-ui/icons/Inbox";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import Paper from "@material-ui/core/Paper";
+import NewAuctionListItem from "./NewAuctionListItem";
 
 const mockAuction = {
   name: "Mock Auction with correct public key",
@@ -66,12 +67,8 @@ export default function MyAuctions() {
   function renderAuctionListItems(auctionList) {
     const lastIndex = auctionList.length - 1;
     return auctionList.map((auction, i) => {
-      if (i !== lastIndex) {
-        // use address as key
-        return <AuctionListItem {...auction} key={auction.name} divider />;
-      } else {
-        return <AuctionListItem {...auction} key={auction.name} />;
-      }
+      // use address as key
+      return <AuctionListItem {...auction} key={auction.name} divider />;
     });
   }
 
@@ -84,6 +81,7 @@ export default function MyAuctions() {
         <Divider />
         <List component="nav" aria-label="my auctions list">
           {renderAuctionListItems(mockList)}
+          <NewAuctionListItem />
         </List>
         <Divider />
       </div>

@@ -2,6 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useState, useEffect } from "react";
 import AuctionCard from "./AuctionCard";
+import NewAuctionCard from "./NewAuctionCard";
 import { getAllAuctionsData } from "../../service/auctionService";
 import { getLoadedWeb3 } from "../../utils/getWeb3";
 import { getAuctionFactoryContract } from "../../utils/getContracts";
@@ -60,6 +61,7 @@ function AuctionList() {
         Auctions
       </Typography>
       {renderAuctions()}
+      <NewAuctionCard />
       {/* <AuctionCard {...mockAuction} />
       <AuctionCard {...mockAuction} />
       <AuctionCard {...mockAuction} />

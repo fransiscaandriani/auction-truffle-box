@@ -10,6 +10,7 @@ import InboxIcon from "@material-ui/icons/Inbox";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import Paper from "@material-ui/core/Paper";
 import NewAuctionListItem from "./NewAuctionListItem";
+import Grid from "@material-ui/core/Grid";
 
 const mockAuction = {
   name: "Mock Auction with correct public key",
@@ -65,26 +66,57 @@ export default function MyAuctions() {
   const classes = useStyles();
 
   function renderAuctionListItems(auctionList) {
-    const lastIndex = auctionList.length - 1;
     return auctionList.map((auction, i) => {
       // use address as key
       return <AuctionListItem {...auction} key={auction.name} divider />;
     });
   }
 
+  function renderMyBidsList(auctionList) {
+    const lastIndex = auctionList.length - 1;
+    return auctionList.map((auction, i) => {
+      // use address as key
+      return (
+        <AuctionListItem
+          {...auction}
+          key={auction.name}
+          divider={lastIndex !== i}
+        />
+      );
+    });
+  }
+
   return (
-    <div className={classes.container}>
-      <Typography className={classes.title} variant="h2" component="h1">
-        My Auctions
-      </Typography>
-      <div className={classes.root}>
-        <Divider />
-        <List component="nav" aria-label="my auctions list">
-          {renderAuctionListItems(mockList)}
-          <NewAuctionListItem />
-        </List>
-        <Divider />
-      </div>
-    </div>
+    <Grid container spacing={3}>
+      <Grid item xs={6}>
+        <div className={classes.container}>
+          <Typography className={classes.title} variant="h2" component="h1">
+            My Auctions
+          </Typography>
+          <div className={classes.root}>
+            <Divider />
+            <List component="nav" aria-label="my auctions list">
+              {renderAuctionListItems(mockList)}
+              <NewAuctionListItem />
+            </List>
+            <Divider />
+          </div>
+        </div>
+      </Grid>
+      <Grid item xs={6}>
+        <div className={classes.container}>
+          <Typography className={classes.title} variant="h2" component="h1">
+            My Bids
+          </Typography>
+          <div className={classes.root}>
+            <Divider />
+            <List component="nav" aria-label="my auctions list">
+              {renderMyBidsList(mockList)}
+            </List>
+            <Divider />
+          </div>
+        </div>
+      </Grid>
+    </Grid>
   );
 }

@@ -409,7 +409,7 @@ function AuctionPage() {
       <div className={classes.action}>
         <img
           className={classes.image}
-          src="https://pbs.twimg.com/media/DVHZv6cWsAIr4at.jpg:large"
+          src="https://afremov.com/images/product/image.jpeg"
           alt="auction-item"
         />
         <div className={classes["button-container"]}>

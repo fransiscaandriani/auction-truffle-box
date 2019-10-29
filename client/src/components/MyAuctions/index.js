@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 import List from "@material-ui/core/List";
@@ -11,18 +11,20 @@ import DraftsIcon from "@material-ui/icons/Drafts";
 import Paper from "@material-ui/core/Paper";
 import NewAuctionListItem from "./NewAuctionListItem";
 import Grid from "@material-ui/core/Grid";
+import { getLoadedWeb3 } from "../../utils/getWeb3";
+import getCurrentAccount from "../../utils/getCurrentAccount";
+import {
+  getAuctionFactoryContract,
+  getPedersenContract
+} from "../../utils/getContracts";
+import { getMyBids } from "../../service/bidderService";
+import { getMyAuctions } from "../../service/auctioneerService";
+import { getAllAuctionsData } from "../../service/auctionService";
 
 const mockAuction = {
   name: "Unique painting by Kevin Drew",
   desc:
-    "The tone of the painting is muted, the style reminiscent of Monet. Each stroke had a smudging quality that rendered the image watery, like a reflection in a rippled puddle. The scene is a street, London I'll bet, the umbrella bearing pedestrians battle against rain and the red double-deckers and black cabs rumble by. It reminds me of Oxford Street, looking out of a rain-splattered window at the rivers of people that moved in each direction. Like in this painting they moved so randomly, pushing against one another, flowing, like water. Perhaps to this artist that's what we are, small drops in a sky full of rain, each one looking out and saying to ourselves “Wow, that sure is a lot of rain.”",
-  bidEndTime: 1570406400,
-  revealTime: 1570416400,
-  winnerPaymentTime: 1570426400,
-  maxBiddersCount: 20,
-  fairnessFees: 5,
-  passphrase: "abcdefgh",
-  testing: true
+    "The tone of the painting is muted, the style reminiscent of Monet. Each stroke had a smudging quality that rendered the image watery, like a reflection in a rippled puddle. The scene is a street, London I'll bet, the umbrella bearing pedestrians battle against rain and the red double-deckers and black cabs rumble by. It reminds me of Oxford Street, looking out of a rain-splattered window at the rivers of people that moved in each direction. Like in this painting they moved so randomly, pushing against one another, flowing, like water. Perhaps to this artist that's what we are, small drops in a sky full of rain, each one looking out and saying to ourselves “Wow, that sure is a lot of rain.”"
 };
 
 const mockList = [mockAuction];
@@ -73,6 +75,45 @@ function AuctionListItem(props) {
 
 export default function MyAuctions() {
   const classes = useStyles();
+  const [myAuctions, setMyAuctions] = useState([]);
+  const [myBids, setMyBids] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Get network provider and web3 instance.
+        const web3 = await getLoadedWeb3();
+        const account = await getCurrentAccount(web3);
+        const auctionFactoryContract = await getAuctionFactoryContract(web3);
+
+        const myAuctionsAddresses = await getMyAuctions(
+          web3,
+          auctionFactoryContract,
+          account
+        );
+        const myAuctions = await getAllAuctionsData(
+          auctionFactoryContract,
+          myAuctionsAddresses
+        );
+        setMyAuctions(myAuctions);
+        const myBidsAddresses = await getMyBids(
+          web3,
+          auctionFactoryContract,
+          account
+        );
+        const myBids = await getAllAuctionsData(
+          auctionFactoryContract,
+          myBidsAddresses
+        );
+        setMyBids(myBids);
+      } catch (error) {
+        // Catch any errors for any of the above operations.
+        alert(`Failed to load data`);
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, []);
 
   function renderAuctionListItems(auctionList) {
     return auctionList.map((auction, i) => {
@@ -105,7 +146,7 @@ export default function MyAuctions() {
           <div className={classes.root}>
             <Divider />
             <List component="nav" aria-label="my auctions list">
-              {renderAuctionListItems(mockList)}
+              {renderAuctionListItems(myAuctions)}
               <NewAuctionListItem />
             </List>
             <Divider />
@@ -120,7 +161,7 @@ export default function MyAuctions() {
           <div className={classes.root}>
             <Divider />
             <List component="nav" aria-label="my auctions list">
-              {renderMyBidsList(mockList)}
+              {renderMyBidsList(myBids)}
             </List>
             <Divider />
           </div>

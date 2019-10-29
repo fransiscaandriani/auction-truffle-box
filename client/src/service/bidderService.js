@@ -33,8 +33,7 @@ async function encrypt(bid, randomInt, publicKey) {
   return encryptionResult.cipher;
 }
 
-export async function getMyBids(web3, account) {
-  const auctionFactoryContract = await getAuctionFactoryContract(web3);
+export async function getMyBids(web3, auctionFactoryContract, account) {
   var bids = [];
   const auctionAddresses = await auctionFactoryContract.methods
     .allAuctions()

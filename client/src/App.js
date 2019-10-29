@@ -83,8 +83,8 @@ class App extends Component {
     // const address = await createAuction(account, web3, contract);
     // console.log(address);
     // (async () => {
-    const pedersen = await getPedersenContract(web3);
-    console.log("pedersen", pedersen);
+    // const pedersen = await getPedersenContract(web3);
+    // console.log("pedersen", pedersen);
 
     //   const challenges = await generateChallenges(
     //     10,
@@ -96,17 +96,17 @@ class App extends Component {
     //   await prove(web3, account, auction, pedersen, "abcdefgh");
     // })();
 
-    const auction = await getAuctionContract(
-      web3,
-      "0x3156BD1b8D109A42191a45D2C4E3f954E0aB3580"
-    );
+    // const auction = await getAuctionContract(
+    //   web3,
+    //   "0x3156BD1b8D109A42191a45D2C4E3f954E0aB3580"
+    // );
 
-    const auctionData = await getAuctionData(
-      web3,
-      "0x3156BD1b8D109A42191a45D2C4E3f954E0aB3580",
-      account
-    );
-    console.log(auctionData);
+    // const auctionData = await getAuctionData(
+    //   web3,
+    //   "0x3156BD1b8D109A42191a45D2C4E3f954E0aB3580",
+    //   account
+    // );
+    // console.log(auctionData);
     // await winnerPay(web3, auction, account);
     // await verifyAll(auction, account);
     // const commitWinner = await pedersen.methods.Commit(10, 162039573).call();
@@ -139,8 +139,8 @@ class App extends Component {
     //   .call();
     // console.log(correct);
 
-    const winner = await getWinner(auction, "abcdefgh");
-    console.log(winner);
+    // const winner = await getWinner(auction, "abcdefgh");
+    // console.log(winner);
 
     // const states = await auction.methods.states().call();
     // console.log(states);
@@ -148,8 +148,8 @@ class App extends Component {
     // const bidder = await auction.methods.bidders(account).call();
     // console.log(bidder);
     // claimWinner(auction, winner, account);
-    const auctionWinner = await auction.methods.winner().call();
-    console.log("winner: ", auctionWinner);
+    // const auctionWinner = await auction.methods.winner().call();
+    // console.log("winner: ", auctionWinner);
     // const cipher =
     //   "aMf+5EM9jxSl6x+iafaGmJyrQzqXZvzdO64VDCF6lssb2nXcfK4aUboEdoJHhEJnGsYYF1eMww/uPO8yGk/h+OcqGigEFrb4NhZzzuHT3m9yaIQzVOKQgnIebljsKwQXebRQiaOR+PdrhttGXO5HSH6/HB3qtvM2QTx65ByXsxM=?uiZ1nD1GMlXVPclSeGke2KSkzTy0fHTWv1jWzyV5qjRoPfE7vkUJsOf9EbEFwDor";
     // revealBid(auction, account, cipher);
@@ -199,6 +199,10 @@ class App extends Component {
             {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
             <Switch>
+              <Route path="/" exact>
+                <TopAppBar />
+                <AuctionList />
+              </Route>
               <Route path="/auctions">
                 <TopAppBar />
                 <AuctionList />

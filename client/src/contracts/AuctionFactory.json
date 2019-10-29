@@ -194,7 +194,7 @@
         "id": 3,
         "nodeType": "ImportDirective",
         "scope": 151,
-        "sourceUnit": 1726,
+        "sourceUnit": 1342,
         "src": "25:46:0",
         "symbolAliases": [
           {
@@ -210,7 +210,7 @@
         "id": 5,
         "nodeType": "ImportDirective",
         "scope": 151,
-        "sourceUnit": 1980,
+        "sourceUnit": 1596,
         "src": "72:40:0",
         "symbolAliases": [
           {
@@ -223,8 +223,8 @@
       {
         "baseContracts": [],
         "contractDependencies": [
-          1725,
-          1979
+          1341,
+          1595
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -302,7 +302,7 @@
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_contract$_Auction_$1725",
+                  "typeIdentifier": "t_contract$_Auction_$1341",
                   "typeString": "contract Auction"
                 },
                 "typeName": {
@@ -310,10 +310,10 @@
                   "id": 10,
                   "name": "Auction",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1725,
+                  "referencedDeclaration": 1341,
                   "src": "209:7:0",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_Auction_$1725",
+                    "typeIdentifier": "t_contract$_Auction_$1341",
                     "typeString": "contract Auction"
                   }
                 },
@@ -619,7 +619,7 @@
                             "nodeType": "NewExpression",
                             "src": "517:12:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_function_creation_nonpayable$__$returns$_t_contract$_Pedersen_$1979_$",
+                              "typeIdentifier": "t_function_creation_nonpayable$__$returns$_t_contract$_Pedersen_$1595_$",
                               "typeString": "function () returns (contract Pedersen)"
                             },
                             "typeName": {
@@ -627,10 +627,10 @@
                               "id": 37,
                               "name": "Pedersen",
                               "nodeType": "UserDefinedTypeName",
-                              "referencedDeclaration": 1979,
+                              "referencedDeclaration": 1595,
                               "src": "521:8:0",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_Pedersen_$1979",
+                                "typeIdentifier": "t_contract$_Pedersen_$1595",
                                 "typeString": "contract Pedersen"
                               }
                             }
@@ -645,7 +645,7 @@
                           "nodeType": "FunctionCall",
                           "src": "517:14:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_Pedersen_$1979",
+                            "typeIdentifier": "t_contract$_Pedersen_$1595",
                             "typeString": "contract Pedersen"
                           }
                         }
@@ -653,7 +653,7 @@
                       "expression": {
                         "argumentTypes": [
                           {
-                            "typeIdentifier": "t_contract$_Pedersen_$1979",
+                            "typeIdentifier": "t_contract$_Pedersen_$1595",
                             "typeString": "contract Pedersen"
                           }
                         ],
@@ -742,7 +742,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Auction_$1725",
+                        "typeIdentifier": "t_contract$_Auction_$1341",
                         "typeString": "contract Auction"
                       },
                       "typeName": {
@@ -750,10 +750,10 @@
                         "id": 69,
                         "name": "Auction",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 1725,
+                        "referencedDeclaration": 1341,
                         "src": "825:7:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Auction_$1725",
+                          "typeIdentifier": "t_contract$_Auction_$1341",
                           "typeString": "contract Auction"
                         }
                       },
@@ -890,7 +890,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2704,
+                          "referencedDeclaration": 1610,
                           "src": "991:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -919,7 +919,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2704,
+                          "referencedDeclaration": 1610,
                           "src": "1003:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -996,7 +996,7 @@
                       "nodeType": "NewExpression",
                       "src": "846:11:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_string_memory_ptr_$_t_address_$_t_uint8_$_t_bool_$_t_address_payable_$_t_uint256_$returns$_t_contract$_Auction_$1725_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_string_memory_ptr_$_t_address_$_t_uint8_$_t_bool_$_t_address_payable_$_t_uint256_$returns$_t_contract$_Auction_$1341_$",
                         "typeString": "function (uint256,uint256,uint256,uint256,uint256,string memory,address,uint8,bool,address payable,uint256) returns (contract Auction)"
                       },
                       "typeName": {
@@ -1004,10 +1004,10 @@
                         "id": 71,
                         "name": "Auction",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 1725,
+                        "referencedDeclaration": 1341,
                         "src": "850:7:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Auction_$1725",
+                          "typeIdentifier": "t_contract$_Auction_$1341",
                           "typeString": "contract Auction"
                         }
                       }
@@ -1022,7 +1022,7 @@
                     "nodeType": "FunctionCall",
                     "src": "846:167:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Auction_$1725",
+                      "typeIdentifier": "t_contract$_Auction_$1341",
                       "typeString": "contract Auction"
                     }
                   },
@@ -1045,7 +1045,7 @@
                             "referencedDeclaration": 70,
                             "src": "1052:10:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           }
@@ -1053,7 +1053,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           ],
@@ -1173,7 +1173,7 @@
                             "referencedDeclaration": 70,
                             "src": "1089:10:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           }
@@ -1181,7 +1181,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           ],
@@ -1263,7 +1263,7 @@
                           "referencedDeclaration": 70,
                           "src": "1130:10:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_Auction_$1725",
+                            "typeIdentifier": "t_contract$_Auction_$1341",
                             "typeString": "contract Auction"
                           }
                         }
@@ -1279,7 +1279,7 @@
                             "typeString": "string memory"
                           },
                           {
-                            "typeIdentifier": "t_contract$_Auction_$1725",
+                            "typeIdentifier": "t_contract$_Auction_$1341",
                             "typeString": "contract Auction"
                           }
                         ],
@@ -1334,7 +1334,7 @@
                             "referencedDeclaration": 70,
                             "src": "1178:10:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           }
@@ -1342,7 +1342,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           ],
@@ -1381,7 +1381,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2704,
+                          "referencedDeclaration": 1610,
                           "src": "1191:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2182,7 +2182,7 @@
         "id": 3,
         "nodeType": "ImportDirective",
         "scope": 151,
-        "sourceUnit": 1726,
+        "sourceUnit": 1342,
         "src": "25:46:0",
         "symbolAliases": [
           {
@@ -2198,7 +2198,7 @@
         "id": 5,
         "nodeType": "ImportDirective",
         "scope": 151,
-        "sourceUnit": 1980,
+        "sourceUnit": 1596,
         "src": "72:40:0",
         "symbolAliases": [
           {
@@ -2211,8 +2211,8 @@
       {
         "baseContracts": [],
         "contractDependencies": [
-          1725,
-          1979
+          1341,
+          1595
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -2290,7 +2290,7 @@
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_contract$_Auction_$1725",
+                  "typeIdentifier": "t_contract$_Auction_$1341",
                   "typeString": "contract Auction"
                 },
                 "typeName": {
@@ -2298,10 +2298,10 @@
                   "id": 10,
                   "name": "Auction",
                   "nodeType": "UserDefinedTypeName",
-                  "referencedDeclaration": 1725,
+                  "referencedDeclaration": 1341,
                   "src": "209:7:0",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_Auction_$1725",
+                    "typeIdentifier": "t_contract$_Auction_$1341",
                     "typeString": "contract Auction"
                   }
                 },
@@ -2607,7 +2607,7 @@
                             "nodeType": "NewExpression",
                             "src": "517:12:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_function_creation_nonpayable$__$returns$_t_contract$_Pedersen_$1979_$",
+                              "typeIdentifier": "t_function_creation_nonpayable$__$returns$_t_contract$_Pedersen_$1595_$",
                               "typeString": "function () returns (contract Pedersen)"
                             },
                             "typeName": {
@@ -2615,10 +2615,10 @@
                               "id": 37,
                               "name": "Pedersen",
                               "nodeType": "UserDefinedTypeName",
-                              "referencedDeclaration": 1979,
+                              "referencedDeclaration": 1595,
                               "src": "521:8:0",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_Pedersen_$1979",
+                                "typeIdentifier": "t_contract$_Pedersen_$1595",
                                 "typeString": "contract Pedersen"
                               }
                             }
@@ -2633,7 +2633,7 @@
                           "nodeType": "FunctionCall",
                           "src": "517:14:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_Pedersen_$1979",
+                            "typeIdentifier": "t_contract$_Pedersen_$1595",
                             "typeString": "contract Pedersen"
                           }
                         }
@@ -2641,7 +2641,7 @@
                       "expression": {
                         "argumentTypes": [
                           {
-                            "typeIdentifier": "t_contract$_Pedersen_$1979",
+                            "typeIdentifier": "t_contract$_Pedersen_$1595",
                             "typeString": "contract Pedersen"
                           }
                         ],
@@ -2730,7 +2730,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Auction_$1725",
+                        "typeIdentifier": "t_contract$_Auction_$1341",
                         "typeString": "contract Auction"
                       },
                       "typeName": {
@@ -2738,10 +2738,10 @@
                         "id": 69,
                         "name": "Auction",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 1725,
+                        "referencedDeclaration": 1341,
                         "src": "825:7:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Auction_$1725",
+                          "typeIdentifier": "t_contract$_Auction_$1341",
                           "typeString": "contract Auction"
                         }
                       },
@@ -2878,7 +2878,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2704,
+                          "referencedDeclaration": 1610,
                           "src": "991:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2907,7 +2907,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2704,
+                          "referencedDeclaration": 1610,
                           "src": "1003:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2984,7 +2984,7 @@
                       "nodeType": "NewExpression",
                       "src": "846:11:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_string_memory_ptr_$_t_address_$_t_uint8_$_t_bool_$_t_address_payable_$_t_uint256_$returns$_t_contract$_Auction_$1725_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_uint256_$_t_string_memory_ptr_$_t_address_$_t_uint8_$_t_bool_$_t_address_payable_$_t_uint256_$returns$_t_contract$_Auction_$1341_$",
                         "typeString": "function (uint256,uint256,uint256,uint256,uint256,string memory,address,uint8,bool,address payable,uint256) returns (contract Auction)"
                       },
                       "typeName": {
@@ -2992,10 +2992,10 @@
                         "id": 71,
                         "name": "Auction",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 1725,
+                        "referencedDeclaration": 1341,
                         "src": "850:7:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Auction_$1725",
+                          "typeIdentifier": "t_contract$_Auction_$1341",
                           "typeString": "contract Auction"
                         }
                       }
@@ -3010,7 +3010,7 @@
                     "nodeType": "FunctionCall",
                     "src": "846:167:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Auction_$1725",
+                      "typeIdentifier": "t_contract$_Auction_$1341",
                       "typeString": "contract Auction"
                     }
                   },
@@ -3033,7 +3033,7 @@
                             "referencedDeclaration": 70,
                             "src": "1052:10:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           }
@@ -3041,7 +3041,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           ],
@@ -3161,7 +3161,7 @@
                             "referencedDeclaration": 70,
                             "src": "1089:10:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           }
@@ -3169,7 +3169,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           ],
@@ -3251,7 +3251,7 @@
                           "referencedDeclaration": 70,
                           "src": "1130:10:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_Auction_$1725",
+                            "typeIdentifier": "t_contract$_Auction_$1341",
                             "typeString": "contract Auction"
                           }
                         }
@@ -3267,7 +3267,7 @@
                             "typeString": "string memory"
                           },
                           {
-                            "typeIdentifier": "t_contract$_Auction_$1725",
+                            "typeIdentifier": "t_contract$_Auction_$1341",
                             "typeString": "contract Auction"
                           }
                         ],
@@ -3322,7 +3322,7 @@
                             "referencedDeclaration": 70,
                             "src": "1178:10:0",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           }
@@ -3330,7 +3330,7 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Auction_$1725",
+                              "typeIdentifier": "t_contract$_Auction_$1341",
                               "typeString": "contract Auction"
                             }
                           ],
@@ -3369,7 +3369,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2704,
+                          "referencedDeclaration": 1610,
                           "src": "1191:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -4180,12 +4180,12 @@
         }
       },
       "links": {},
-      "address": "0xDe8641Bcbb7C89E0C1289eCb8d8991187177BbB3",
-      "transactionHash": "0x168a54901c25787b6463fcd31e9ffc72f32b7dde1d2777e314f8c0cb8380c861"
+      "address": "0x254f657832c7E0E227352aab10C53b44cA8b7a78",
+      "transactionHash": "0x45bd6fc924600a50aa5484c49cccb7559cb53936c75fc12cd738782fdcb469c8"
     }
   },
   "schemaVersion": "3.0.16",
-  "updatedAt": "2019-10-11T06:20:21.598Z",
+  "updatedAt": "2019-10-28T17:06:23.818Z",
   "devdoc": {
     "methods": {}
   },

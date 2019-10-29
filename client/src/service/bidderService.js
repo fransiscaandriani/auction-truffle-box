@@ -19,7 +19,7 @@ export async function placeBid(account, web3, auctionContract, bid) {
   try {
     await auctionContract.methods
       .Bid(commit.cX, commit.cY)
-      .send({ from: account, value: fee });
+      .send({ from: account, value: web3.utils.toWei(fee) });
     return encrypt(bid, randomInt, auctioneerRSAPublicKey);
   } catch (e) {
     alert(`Transaction unsuccessful`);

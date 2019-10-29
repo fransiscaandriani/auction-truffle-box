@@ -266,8 +266,8 @@ export async function verifyAll(auctionContract, account) {
   }
 }
 
-export async function getMyAuctions(web3, account) {
-  const auctionFactoryContract = await getAuctionFactoryContract(web3);
+export async function getMyAuctions(web3, auctionFactoryContract, account) {
+  // const auctionFactoryContract = await getAuctionFactoryContract(web3);
   var auctions = [];
   const auctionAddresses = await auctionFactoryContract.methods
     .allAuctions()
@@ -282,6 +282,8 @@ export async function getMyAuctions(web3, account) {
         auctions.push(address);
       }
     })
-  );
+  ).then(a => {
+    return auctions;
+  });
   return auctions;
 }

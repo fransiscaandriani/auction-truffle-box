@@ -59,7 +59,7 @@ function AuctionListItem(props) {
   // can show picture too
   // or use a static icon
   return (
-    <ListItemLink href="#simple-list" {...props}>
+    <ListItemLink href={"/auction/" + props.address} {...props}>
       <ListItemText
         primary={props.name}
         secondary={props.desc}

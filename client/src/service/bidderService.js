@@ -73,10 +73,12 @@ export async function refund(auctionContract, account) {
 export async function winnerPay(web3, auctionContract, account) {
   try {
     const bid = await auctionContract.methods.highestBid().call();
+    const fairnessFee = await auctionContract.methods.fairnessFees().call();
+    const payment = bid - fairnessFee;
     console.log(bid);
     await auctionContract.methods
       .WinnerPay()
-      .send({ from: account, value: web3.utils.toWei(bid) });
+      .send({ from: account, value: web3.utils.toWei(payment.toString()) });
   } catch (error) {
     console.log(error);
     alert(`Winner payment unsuccessful`);

@@ -16,6 +16,7 @@ import { createAuction } from "../../service/auctionService";
 import getCurrentAccount from "../../utils/getCurrentAccount";
 import { getLoadedWeb3 } from "../../utils/getWeb3";
 import { getAuctionFactoryContract } from "../../utils/getContracts";
+import { getNFTokenMetadataContract } from "../../utils/getNightfall";
 
 const useStyles = makeStyles(theme => ({
   layout: {
@@ -61,6 +62,7 @@ function CreateAuctionPage() {
   const [web3, setWeb3] = useState({});
   const [auctionFactoryContract, setAuctionFactoryContract] = useState({});
   const [account, setAccount] = useState("");
+  const [NFTokenMetadataContract, setNFTokenMetadataContract] = useState({});
 
   useEffect(() => {
     async function fetchData() {
@@ -69,23 +71,14 @@ function CreateAuctionPage() {
         const web3 = await getLoadedWeb3();
         setWeb3(web3);
 
-        // const getData = () =>
-        //   Promise.all([
-        //     getAuctionFactoryContract(web3),
-        //     getCurrentAccount(web3)
-        //   ]).then({
-        //     function(result) {
-        //       setAuctionFactoryContract(result[0]);
-        //       setAccount(result[1]);
-        //     }
-        //   });
-        // await getData();
-
         const auctionFactoryContract = await getAuctionFactoryContract(web3);
         setAuctionFactoryContract(auctionFactoryContract);
 
         const account = await getCurrentAccount(web3);
         setAccount(account);
+
+        const NFTokenMetadataContract = await getNFTokenMetadataContract(web3);
+        setNFTokenMetadataContract(NFTokenMetadataContract);
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(
@@ -191,17 +184,18 @@ function CreateAuctionPage() {
       revealTime: revealTimeTs,
       winnerPaymentTime: winnerPaymentTimeTs,
       maxBiddersCount: maxBiddersCount,
-      fairnessFees: fairnessFees,
-      passphrase: passphrase,
-      testing: true
+      fairnessFees: fairnessFees
     };
     console.log(auctionFactoryContract.options.address);
     if (allGood & correct) {
       // await fetchData();
+      const contracts = {};
+      contracts.auctionFactoryContract = auctionFactoryContract;
+      contracts.NFTokenMetadataContract = NFTokenMetadataContract;
       const address = await createAuction(
         account,
         web3,
-        auctionFactoryContract,
+        contracts,
         auctionData
       );
       if (address !== null) console.log(address);

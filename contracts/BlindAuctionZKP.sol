@@ -1,5 +1,8 @@
 pragma solidity >0.4.18;
 import "./Pedersen.sol";
+import "nightfall/contracts/NFTokenMetadata.sol";
+import "nightfall/contracts/NFTokenShield.sol";
+
 contract Auction {
     enum VerificationStates {Init, Challenge,ChallengeDelta, Verify, VerifyDelta, ValidWinner}
     struct Bidder {
@@ -11,11 +14,12 @@ contract Auction {
         bool existing;
     }
     Pedersen pedersen;
+    NFTokenMetadata nftoken;
     bool withdrawLock;
     VerificationStates public states;
     address private challengedBidder;
     uint private challengeBlockNumber;
-    bool private testing; //for fast testing without checking time intervals
+    bool private testing = true; //for fast testing without checking time intervals
     uint8 private K = 10; //number of multiple rounds per ZKP
     uint public Q = 21888242871839275222246405745257275088696311157297823662689037894645226208583;
     uint public maxBid = 5472060717959818805561601436314318772174077789324455915672259473661306552145;
@@ -39,10 +43,9 @@ contract Auction {
 
     //Constructor = Setting all Parameters and auctioneerAddress as well
     constructor(uint _bidEndTime, uint _revealTime, uint _winnerPaymentTime, uint _maxBiddersCount,
-     uint _fairnessFees, string memory _auctioneerRSAPublicKey, address pedersenAddress, uint8 k, bool _testing,
-     address payable _auctioneerAddress, uint _auctioneerDeposit )
+     uint _fairnessFees, string memory _auctioneerRSAPublicKey, address pedersenAddress, address NFTokenAddress,
+     address payable _auctioneerAddress)
      public {
-        require(_auctioneerDeposit >= _fairnessFees, "Deposit too low");
         auctioneerAddress = _auctioneerAddress;
         bidEndTime = _bidEndTime;
         revealTime = _revealTime;
@@ -51,8 +54,9 @@ contract Auction {
         fairnessFees = _fairnessFees;
         auctioneerRSAPublicKey = _auctioneerRSAPublicKey;
         pedersen = Pedersen(pedersenAddress);
-        K = k;
-        testing = _testing;
+        nftoken = NFTokenMetadata(NFTokenAddress);
+        // K = k;
+        // testing = _testing;
     }
 
     function BidderData(address account) public view returns(bool, bool, bool, bool) {
@@ -71,15 +75,28 @@ contract Auction {
       return indexs;
     }
 
-    function Bid(uint cX, uint cY) public payable
-    onlyBefore(bidEndTime)
-    {
+    // function Bid(uint cX, uint cY) public payable
+    // onlyBefore(bidEndTime)
+    // {
+    //     require(indexs.length < maxBiddersCount, "Too many bidders"); //available slot
+    //     require(msg.value >= fairnessFees, "Fee sent below fairness fee");  //paying fees
+    //     require(bidders[msg.sender].existing == false, "Bidder has bid before");
+    //     bidders[msg.sender] = Bidder(cX, cY,"", false, false,true);
+    //     indexs.push(msg.sender);
+    // }
+
+    function Bid(uint256 NFTokenId) public payable
+    onlyBefore(bidEndTime){
         require(indexs.length < maxBiddersCount, "Too many bidders"); //available slot
         require(msg.value >= fairnessFees, "Fee sent below fairness fee");  //paying fees
         require(bidders[msg.sender].existing == false, "Bidder has bid before");
-        bidders[msg.sender] = Bidder(cX, cY,"", false, false,true);
+        string memory tokenURI = nftoken.tokenURI(NFTokenId);
+        (uint256 commitX, uint256 commitY, bool hasError) = parseCommits(tokenURI);
+        require(hasError == true, "Bid commitment invalid");
+        bidders[msg.sender] = Bidder(commitX, commitY,"", false, false,true);
         indexs.push(msg.sender);
     }
+
     function Reveal(string memory cipher) public
     onlyBefore(revealTime)
     onlyAfter(bidEndTime)
@@ -209,4 +226,39 @@ contract Auction {
 
     modifier onlyBefore(uint _time) {require(now < _time || testing, "Not time yet"); _;}
     modifier onlyAfter(uint _time) {require(now > _time || testing, "Time has passed"); _;}
+
+    function parseCommits(string memory s) internal pure returns (uint256, uint256, bool) {
+      bool hasError = false;
+      bytes memory b = bytes(s);
+      uint256 firstNumber = 0;
+      uint256 result = 0;
+      uint256 oldResult = 0;
+      bytes memory _0 = new bytes(48);
+      bytes memory _9 = new bytes(57);
+      for (uint i = 0; i < b.length; i++) { // c = b[i] was not needed
+          if (b[i] >= _0[0] && b[i] <= _9[0]) {
+              // store old value so we can check for overflows
+              oldResult = result;
+              result = result * 10 + (uint256(uint8(b[i])) - 48); // bytes and int are not compatible with the operator -.
+              // prevent overflows
+              if(oldResult > result ) {
+                  // we can only get here if the result overflowed and is smaller than last stored value
+                  hasError = true;
+              }
+          }
+          else if(b[i] == ","){
+              if(firstNumber != 0) {
+                  hasError = true;
+              }
+              else{
+                  firstNumber = result;
+                  result = 0;
+                  oldResult = 0;
+              }
+          } else {
+              hasError = true;
+          }
+      }
+    return (firstNumber, result, hasError);
+}
 }

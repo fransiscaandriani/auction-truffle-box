@@ -3,6 +3,7 @@ import {
   getAuctionFactoryContract,
   getAuctionContract
 } from "../utils/getContracts";
+import { getNFTokenMetadataContract } from "../utils/getNightfall";
 
 const mockAuction = {
   name: "Mock Auction with correct public key",
@@ -19,15 +20,17 @@ const mockAuction = {
 export async function createAuction(
   account,
   web3,
-  contract,
+  auctionFactoryContract,
+  NFTokenMetadataContract,
   auctionData = mockAuction
 ) {
   const rsaKey = Cryptico.generateRSAKey(auctionData.passphrase, 1024);
   const publicKey = Cryptico.publicKeyString(rsaKey);
+  console.log(NFTokenMetadataContract.options.address);
   let result;
   try {
     async function sendData() {
-      await contract.methods
+      await auctionFactoryContract.methods
         .createAuction(
           auctionData.name,
           auctionData.desc,
@@ -37,8 +40,7 @@ export async function createAuction(
           auctionData.maxBiddersCount,
           auctionData.fairnessFees,
           publicKey,
-          10,
-          auctionData.testing
+          NFTokenMetadataContract.options.address
         )
         .send({
           from: account,

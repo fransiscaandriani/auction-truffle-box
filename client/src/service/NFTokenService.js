@@ -11,3 +11,13 @@ export async function mintNFToken(contract, account, uri) {
     console.log(error);
   }
 }
+
+export async function transferNFToken(contract, account, to, tokenId) {
+  try {
+    await contract.methods
+      .transferFrom(account, to, tokenId)
+      .send({ from: account });
+  } catch (error) {
+    console.log(error);
+  }
+}

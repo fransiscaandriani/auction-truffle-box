@@ -81,7 +81,6 @@ function AuctionPage() {
   const [openModal, setOpenModal] = useState(false);
   const [auctionData, setAuctionData] = useState({});
   const [passphrase, setPassphrase] = useState("");
-  const [NFTokenMetadataContract, setNFTokenMetadataContract] = useState({});
   const { address } = useParams();
 
   useEffect(() => {
@@ -102,9 +101,6 @@ function AuctionPage() {
 
         const newAuctionData = await getAuctionData(web3, address, account);
         setAuctionData(newAuctionData);
-
-        const NFTokenMetadataContract = await getNFTokenMetadataContract(web3);
-        setNFTokenMetadataContract(NFTokenMetadataContract);
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(

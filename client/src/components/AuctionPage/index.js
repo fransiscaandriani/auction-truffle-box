@@ -23,6 +23,7 @@ import {
   verifyAll
 } from "../../service/auctioneerService";
 import { getAuctionData } from "../../service/auctionService";
+import { getNFTokenMetadataContract } from "../../utils/getNightfall";
 
 const useStyles = makeStyles({
   title: {
@@ -80,6 +81,7 @@ function AuctionPage() {
   const [openModal, setOpenModal] = useState(false);
   const [auctionData, setAuctionData] = useState({});
   const [passphrase, setPassphrase] = useState("");
+  const [NFTokenMetadataContract, setNFTokenMetadataContract] = useState({});
   const { address } = useParams();
 
   useEffect(() => {
@@ -100,6 +102,9 @@ function AuctionPage() {
 
         const newAuctionData = await getAuctionData(web3, address, account);
         setAuctionData(newAuctionData);
+
+        const NFTokenMetadataContract = await getNFTokenMetadataContract(web3);
+        setNFTokenMetadataContract(NFTokenMetadataContract);
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(
@@ -123,6 +128,7 @@ function AuctionPage() {
       auctionContract,
       parseInt(bid)
     );
+    console.log(cipher);
     if (cipher !== null) {
       setCipher(cipher);
       setOpenModal(true);
@@ -136,7 +142,7 @@ function AuctionPage() {
   };
 
   // const currentTime = Math.floor(Date.now() / 1000);
-  const currentTime = 1571294812;
+  const currentTime = 1570416500;
 
   /**
    * 1. determine winner button

@@ -5,6 +5,8 @@ import {
 } from "../utils/getContracts";
 import Cryptico from "cryptico-js";
 import { getWinner } from "./auctioneerService";
+import { mintNFToken, transferNFToken } from "./NFTokenService";
+import { getNFTokenMetadataContract } from "../utils/getNightfall";
 
 // Input bid in eth
 export async function placeBid(account, web3, auctionContract, bid) {
@@ -14,11 +16,44 @@ export async function placeBid(account, web3, auctionContract, bid) {
     .call();
   const fee = await auctionContract.methods.fairnessFees().call();
   const pedersen = await getPedersenContract(web3);
+  const NFTokenContract = await getNFTokenMetadataContract(web3);
   const randomInt = Math.floor(Math.random() * 10 ** 10);
+  console.log(randomInt);
+  console.log(bid);
   const commit = await pedersen.methods.Commit(bid, randomInt).call();
+  const cX = commit.cX;
+  const cY = commit.cY;
+  console.log(cX.toString());
+  const uri = encodeURI(cX.toString() + "," + cY.toString());
+  console.log(uri, "uri");
+  let tokenId;
+  try {
+    tokenId = await mintNFToken(NFTokenContract, account, uri);
+  } catch (error) {
+    alert(`Minting NFToken unsuccessful`);
+    console.log(error);
+    return null;
+  }
+  console.log("tokenID", tokenId);
+  if (tokenId === undefined) {
+    return null;
+  }
+
+  try {
+    await transferNFToken(
+      NFTokenContract,
+      account,
+      auctionContract.options.address,
+      tokenId
+    );
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+
   try {
     await auctionContract.methods
-      .Bid(commit.cX, commit.cY)
+      .Bid(tokenId)
       .send({ from: account, value: web3.utils.toWei(fee) });
     return encrypt(bid, randomInt, auctioneerRSAPublicKey);
   } catch (e) {

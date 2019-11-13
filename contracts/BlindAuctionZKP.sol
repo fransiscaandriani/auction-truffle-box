@@ -59,12 +59,14 @@ contract Auction {
         // testing = _testing;
     }
 
-    function BidderData(address account) public view returns(bool, bool, bool, bool) {
+    function BidderData(address account) public view returns(bool, bool, bool, bool, uint, uint) {
       bool hasBid = bidders[account].existing;
       bool paidBack = bidders[account].paidBack;
       bool bidderExceeds = indexs.length>=maxBiddersCount;
       bool isWinner = account == winner;
-      return(hasBid, bidderExceeds, paidBack, isWinner);
+      uint cX = bidders[account].commitX;
+      uint cY = bidders[account].commitY;
+      return(hasBid, bidderExceeds, paidBack, isWinner, cX, cY);
     }
 
     function AuctionData() public view returns(uint, uint, uint, uint, VerificationStates){
@@ -91,8 +93,9 @@ contract Auction {
         require(msg.value >= fairnessFees, "Fee sent below fairness fee");  //paying fees
         require(bidders[msg.sender].existing == false, "Bidder has bid before");
         string memory tokenURI = nftoken.tokenURI(NFTokenId);
-        (uint256 commitX, uint256 commitY, bool hasError) = parseCommits(tokenURI);
-        require(hasError == true, "Bid commitment invalid");
+        (uint commitX, uint commitY, bool hasError) = parseCommits(tokenURI);
+        require(hasError == false, "Bid commitment invalid");
+        nftoken.burn(NFTokenId);
         bidders[msg.sender] = Bidder(commitX, commitY,"", false, false,true);
         indexs.push(msg.sender);
     }
@@ -227,38 +230,38 @@ contract Auction {
     modifier onlyBefore(uint _time) {require(now < _time || testing, "Not time yet"); _;}
     modifier onlyAfter(uint _time) {require(now > _time || testing, "Time has passed"); _;}
 
-    function parseCommits(string memory s) internal pure returns (uint256, uint256, bool) {
-      bool hasError = false;
-      bytes memory b = bytes(s);
-      uint256 firstNumber = 0;
-      uint256 result = 0;
-      uint256 oldResult = 0;
-      bytes memory _0 = new bytes(48);
-      bytes memory _9 = new bytes(57);
-      for (uint i = 0; i < b.length; i++) { // c = b[i] was not needed
-          if (b[i] >= _0[0] && b[i] <= _9[0]) {
-              // store old value so we can check for overflows
-              oldResult = result;
-              result = result * 10 + (uint256(uint8(b[i])) - 48); // bytes and int are not compatible with the operator -.
-              // prevent overflows
-              if(oldResult > result ) {
-                  // we can only get here if the result overflowed and is smaller than last stored value
-                  hasError = true;
-              }
-          }
-          else if(b[i] == ","){
-              if(firstNumber != 0) {
-                  hasError = true;
-              }
-              else{
-                  firstNumber = result;
-                  result = 0;
-                  oldResult = 0;
-              }
-          } else {
-              hasError = true;
-          }
-      }
-    return (firstNumber, result, hasError);
-}
+ function parseCommits(string memory s) public pure returns (uint, uint, bool) {
+        bool hasError = false;
+        bytes memory b = bytes(s);
+        uint firstNumber = 0;
+        uint result = 0;
+        uint oldResult = 0;
+        bytes memory _0 = bytes("0");
+        bytes memory _9 = bytes("9");
+        for (uint i = 0; i < b.length; i++) { // c = b[i] was not needed
+            if (b[i] >= _0[0] && b[i] <= _9[0]) {
+                // store old value so we can check for overflows
+                oldResult = result;
+                result = result * 10 + (uint(uint8(b[i])) - 48); // bytes and int are not compatible with the operator -.
+                // prevent overflows
+                if(oldResult > result ) {
+                    // we can only get here if the result overflowed and is smaller than last stored value
+                    hasError = true;
+                }
+            }
+            else if(b[i] == ","){
+                if(firstNumber != 0) {
+                    hasError = true;
+                }
+                else{
+                    firstNumber = result;
+                    result = 0;
+                    oldResult = 0;
+                }
+            } else {
+                hasError = true;
+            }
+        }
+      return (firstNumber, result, hasError);
+    }
 }

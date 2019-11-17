@@ -6,7 +6,11 @@ import {
 import Cryptico from "cryptico-js";
 import { getWinner } from "./auctioneerService";
 import { mintNFToken, transferNFToken } from "./NFTokenService";
-import { getNFTokenMetadataContract } from "../utils/getNightfall";
+import {
+  getNFTokenMetadataContract,
+  getFTokenContract
+} from "../utils/getNightfall";
+import { mintFToken, transferFToken, approveFToken } from "./FTokenService";
 
 // Input bid in eth
 export async function placeBid(account, web3, auctionContract, bid) {
@@ -47,6 +51,7 @@ export async function placeBid(account, web3, auctionContract, bid) {
       tokenId
     );
   } catch (error) {
+    alert(`Transferring NFToken unsuccessful`);
     console.log(error);
     return null;
   }
@@ -61,6 +66,39 @@ export async function placeBid(account, web3, auctionContract, bid) {
     return null;
   }
 }
+
+export async function revealBid(auctionContract, account, cipher, web3) {
+  const NFTokenContract = await getNFTokenMetadataContract(web3);
+  let tokenId;
+  try {
+    tokenId = await mintNFToken(NFTokenContract, account, cipher);
+  } catch (error) {
+    alert(`Minting NFToken unsuccessful`);
+    console.log(error);
+    return null;
+  }
+
+  try {
+    await transferNFToken(
+      NFTokenContract,
+      account,
+      auctionContract.options.address,
+      tokenId
+    );
+  } catch (error) {
+    alert(`Transferring NFToken unsuccessful`);
+    console.log(error);
+    return null;
+  }
+
+  try {
+    await auctionContract.methods.Reveal(cipher).send({ from: account });
+  } catch (e) {
+    alert(`Reveal bid unsuccessful`);
+    console.log(e);
+  }
+}
+
 async function encrypt(bid, randomInt, publicKey) {
   const object = { bid: bid, random: randomInt };
   const objectStr = JSON.stringify(object);
@@ -87,15 +125,6 @@ export async function getMyBids(web3, auctionFactoryContract, account) {
   return bids;
 }
 
-export async function revealBid(auctionContract, account, cipher) {
-  try {
-    await auctionContract.methods.Reveal(cipher).send({ from: account });
-  } catch (e) {
-    alert(`Reveal bid unsuccessful`);
-    console.log(e);
-  }
-}
-
 export async function refund(auctionContract, account) {
   try {
     await auctionContract.methods.Withdraw().send({ from: account });
@@ -106,9 +135,41 @@ export async function refund(auctionContract, account) {
 }
 
 export async function winnerPay(web3, auctionContract, account) {
+  const bid = await auctionContract.methods.highestBid().call();
+  console.log(bid);
+
+  const FTokenContract = await getFTokenContract(web3);
+
   try {
-    const bid = await auctionContract.methods.highestBid().call();
-    console.log(bid);
+    await mintFToken(FTokenContract, account, bid);
+  } catch (error) {
+    alert(`Minting FToken unsuccessful`);
+    console.log(error);
+    return null;
+  }
+
+  try {
+    await approveFToken(FTokenContract, account, bid);
+  } catch (error) {
+    alert(`Approving FToken unsuccessful`);
+    console.log(error);
+    return null;
+  }
+
+  try {
+    await transferFToken(
+      FTokenContract,
+      account,
+      auctionContract.options.address,
+      bid
+    );
+  } catch (error) {
+    alert(`Transferring FToken unsuccessful`);
+    console.log(error);
+    return null;
+  }
+
+  try {
     await auctionContract.methods
       .WinnerPay()
       .send({ from: account, value: web3.utils.toWei(bid) });

@@ -3,15 +3,11 @@ import {
   getNFTokenMetadataContract
 } from "../utils/getNightfall";
 
-// import config from "nightfall/code/config";
-// import zkp from "nightfall/code/nf-token-zkp";
 import zokrates from "nightfall/code/zokrates";
 import vkIds from "nightfall/code/vkIds";
 import { getPublicKey } from "../utils/getCurrentAccount";
-// import utils() from "nightfall/code/zkp-utils()";
 const utils = require("nightfall/code/zkp-utils");
 const config = require("nightfall/code/config");
-// const zokrates = require("nightfall/code/zokrates");
 const zkp = require("nightfall/code/nf-token-zkp");
 let container;
 

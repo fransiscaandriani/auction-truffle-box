@@ -1,13 +1,6 @@
 import React, { Component } from "react";
-import Auction from "./contracts/Auction.json";
-import Pedersen from "./contracts/Pedersen.json";
 import { getWeb3 } from "./utils/getWeb3";
-import {
-  getAuctionFactoryContract,
-  getAuctionContract,
-  getPedersenContract
-} from "./utils/getContracts";
-
+import { getAuctionContract, getPedersenContract } from "./utils/getContracts";
 import getCurrentAccount from "./utils/getCurrentAccount";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import AuctionList from "./components/AuctionList";
@@ -15,25 +8,17 @@ import AuctionPage from "./components/AuctionPage";
 import TopAppBar from "./components/TopAppBar";
 import CreateAuctionPage from "./components/CreateAuctionPage";
 import MyAuctions from "./components/MyAuctions";
-import {
-  createAuction,
-  getAllAuctionsData,
-  getAuctionData
-} from "./service/auctionService";
-import {
-  getMyBids,
-  revealBid,
-  refund,
-  winnerPay
-} from "./service/bidderService";
 import "./App.css";
 import {
-  getWinner,
-  claimWinner,
-  prove,
-  generateChallenges,
-  verifyAll
-} from "./service/auctioneerService.js";
+  getFTokenContract,
+  getNFTokenContract,
+  getNFTokenMetadataContract
+} from "./utils/getNightfall";
+import { getAuctionFactoryContract } from "./utils/getContracts";
+import { mintNFToken, transferNFToken, mint } from "./service/NFTokenService";
+import { createAuction } from "./service/auctionService";
+import { mintFToken } from "./service/FTokenService";
+
 class App extends Component {
   state = { storageValue: 0, web3: null, account: null, contract: null };
 
@@ -65,6 +50,49 @@ class App extends Component {
   runExample = async () => {
     const { account, web3, contract } = this.state;
 
+    const NFTokenMetadata = await getNFTokenMetadataContract(web3);
+    const FToken = await getFTokenContract(web3);
+
+    // await mintFToken(FToken, account, 1);
+    const balance = await FToken.methods.balanceOf(account).call();
+    console.log("balance: ", balance);
+    // const tokenID = await mintNFToken(NFTokenMetadata, account, "Test");
+    // console.log("token ID", tokenID);
+    // const tokenIndex = await mint(tokenID, web3, account);
+    // console.log(tokenIndex);
+    // const name = await NFTokenMetadata.methods.name().call();
+    // console.log(NFTokenMetadata.options.address);
+
+    // const uri = await NFTokenMetadata.methods
+    //   .ownerOf(
+    //     "0x6539324eef790000000000000000000000000000000000000000000000000000"
+    //   )
+    //   .call();
+    // console.log(uri);
+
+    const auction = await getAuctionContract(
+      web3,
+      "0x0F43E03f410156a71dbc789A47faB1B602CfE62e"
+    );
+
+    const commits = await auction.methods
+      .parseCommits(
+        "20779569031855404132531372064823362862462183566222728715388444706093711934144,7511802887480697647771995506944117370763500099173371469541817375513740996213"
+      )
+      .call();
+
+    console.log(commits);
+    // const bidderVars = await auction.methods.BidderData(account).call();
+    // console.log(bidderVars);
+    // await transferNFToken(
+    //   NFTokenMetadata,
+    //   account,
+    //   contract.options.address,
+    //   "0x6539324eef790000000000000000000000000000000000000000000000000000"
+    // );
+    // const uri = encodeURI("Test URI");
+    // const tokenID = await mintNFToken(NFTokenMetadata, account, uri);
+    // console.log(tokenID, "TokenID");
     // const auctionData = await getAllAuctionsData(contract, [
     //   "0x3156bd1b8d109a42191a45d2c4e3f954e0ab3580"
     // ]);
@@ -80,10 +108,18 @@ class App extends Component {
     // const mybids = await getMyBids(web3, account);
     // console.log(mybids.length);
 
-    // const address = await createAuction(account, web3, contract);
+    // const contracts = {};
+    // contracts.NFTokenMetadataContract = NFTokenMetadata;
+    // contracts.getAuctionFactoryContract = contract;
+    // const address = await createAuction(
+    //   account,
+    //   web3,
+    //   contract,
+    //   NFTokenMetadata
+    // );
     // console.log(address);
     // (async () => {
-    // const pedersen = await getPedersenContract(web3);
+
     // console.log("pedersen", pedersen);
 
     //   const challenges = await generateChallenges(
@@ -95,11 +131,6 @@ class App extends Component {
     //   console.log(challenges);
     //   await prove(web3, account, auction, pedersen, "abcdefgh");
     // })();
-
-    // const auction = await getAuctionContract(
-    //   web3,
-    //   "0x3156BD1b8D109A42191a45D2C4E3f954E0aB3580"
-    // );
 
     // const auctionData = await getAuctionData(
     //   web3,

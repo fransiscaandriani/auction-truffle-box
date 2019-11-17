@@ -398,7 +398,7 @@ function AuctionPage() {
   };
   const revealBidWithCipher = () => {
     console.log(cipherReveal);
-    revealBid(auctionContract, account, cipherReveal);
+    revealBid(auctionContract, account, cipherReveal, web3);
   };
   const renderPayButton = () => {
     console.log("pay button");

@@ -1,7 +1,21 @@
 import React, { useEffect, useState, useCallback } from "react";
+import ls from "local-storage";
 import { makeStyles } from "@material-ui/core/styles";
-import { Container, Typography, Button, TextField } from "@material-ui/core";
+import {
+  Container,
+  Typography,
+  Button,
+  TextField,
+  Divider
+} from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker
+} from "@material-ui/pickers";
 import CipherModal from "../CipherModal";
+import DateFnsUtils from "@date-io/date-fns";
 import {
   placeBid,
   winnerPay,
@@ -65,6 +79,13 @@ const useStyles = makeStyles({
   },
   lowerButton: {
     marginTop: 8
+  },
+  grid: {
+    position: "absolute",
+    bottom: 0
+  },
+  setTime: {
+    margin: 20
   }
 });
 
@@ -80,6 +101,11 @@ function AuctionPage() {
   const [openModal, setOpenModal] = useState(false);
   const [auctionData, setAuctionData] = useState({});
   const [passphrase, setPassphrase] = useState("");
+  const [currentTime, setCurrentTime] = useState(
+    ls.get("currentTime") || Math.floor(new Date().getTime() / 1000)
+  );
+  const [currentInputDate, setCurrentInputDate] = useState(new Date());
+  const [currentInputTime, setCurrentInputTime] = useState(new Date());
   const { address } = useParams();
 
   useEffect(() => {
@@ -136,7 +162,7 @@ function AuctionPage() {
   };
 
   // const currentTime = Math.floor(Date.now() / 1000);
-  const currentTime = 1571294812;
+  // const currentTime = 1571294812;
 
   /**
    * 1. determine winner button
@@ -184,6 +210,68 @@ function AuctionPage() {
         margin="normal"
         onChange={e => setPassphrase(e.target.value)}
       />
+    );
+  };
+
+  const getTimestampFromDateAndTime = (date, time) => {
+    return Math.floor(
+      new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        time.getHours(),
+        time.getMinutes(),
+        time.getSeconds(),
+        0
+      ).getTime() / 1000
+    );
+  };
+
+  const renderTimeSetter = () => {
+    return (
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <Grid item xs={12} sm={12} className={classes.grid}>
+          <Divider />
+          <KeyboardDatePicker
+            margin="normal"
+            id="date-picker-dialog"
+            label="Current date"
+            format="MM/dd/yyyy"
+            value={currentInputDate}
+            onChange={setCurrentInputDate}
+            KeyboardButtonProps={{
+              "aria-label": "change date"
+            }}
+          />
+          <KeyboardTimePicker
+            margin="normal"
+            id="auction-end-time"
+            name="auction-end-time"
+            label="Current time"
+            value={currentInputTime}
+            onChange={setCurrentInputTime}
+            KeyboardButtonProps={{
+              "aria-label": "change time"
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            className={classes.setTime}
+            onClick={() => {
+              const ts = getTimestampFromDateAndTime(
+                currentInputDate,
+                currentInputTime
+              );
+              setCurrentTime(ts);
+              ls.set("currentTime", ts);
+            }}
+          >
+            Set Current Time
+          </Button>
+        </Grid>
+      </MuiPickersUtilsProvider>
     );
   };
 
@@ -421,6 +509,7 @@ function AuctionPage() {
       <Typography variant="body1" className={classes.description}>
         {auctionData.desc}
       </Typography>
+      {renderTimeSetter()}
     </Container>
   );
 }

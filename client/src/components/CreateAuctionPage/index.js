@@ -184,18 +184,17 @@ function CreateAuctionPage() {
       revealTime: revealTimeTs,
       winnerPaymentTime: winnerPaymentTimeTs,
       maxBiddersCount: maxBiddersCount,
-      fairnessFees: fairnessFees
+      fairnessFees: fairnessFees,
+      passphrase: passphrase
     };
     console.log(auctionFactoryContract.options.address);
     if (allGood & correct) {
       // await fetchData();
-      const contracts = {};
-      contracts.auctionFactoryContract = auctionFactoryContract;
-      contracts.NFTokenMetadataContract = NFTokenMetadataContract;
       const address = await createAuction(
         account,
         web3,
-        contracts,
+        auctionFactoryContract,
+        NFTokenMetadataContract,
         auctionData
       );
       if (address !== null) console.log(address);
